@@ -89,12 +89,16 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         model.run_train(
             labeled_set,
             validation_set,
-            epochs=1,
+            epochs=20,
             batch_size=16,
             best_save_path='rnn_model.pth',
             pos_neg_ratio=3)
-
+            
+        print("Size labeled set " + str(labeled_set_raw.shape[0]))
+        print("Size unlabeled pool " + str(pool_data.shape[0]))
         # Save results
         # todo (siehe Primpeli)
+
+
 
         # Go to (1)
