@@ -1,0 +1,100 @@
+import pandas as pd
+import numpy as np
+
+import deepmatcher as dm
+
+def active_learning(pool_data, validation_data, num_runs, sampling_size, model, file_path='', add_pairs=True):
+    #todo: docstring
+
+    labeled_set_raw = None
+    
+    validation_data.to_csv(file_path + 'validation_set')
+
+    validation_set = dm.data.process(
+        path=file_path,
+        validation='validation_set',
+        ignore_columns=('source_id', 'target_id'),
+        cache=None,
+        left_prefix='left_',
+        right_prefix='right_',
+        label_attr='label',
+        id_attr='id')
+
+    # define labeled set (muss csv datei sein)
+
+    # (1)
+    for i in range(num_runs):
+
+        # process unlabeled pool for deepmatcher
+        pool_data.to_csv(file_path + 'unlabeled_pool')
+
+        unlabeled_pool = dm.data.process(
+            path=file_path,
+            train='unlabeled_pool',
+            ignore_columns=('source_id', 'target_id'),
+            cache=None,
+            left_prefix='left_',
+            right_prefix='right_',
+            label_attr='label',
+            id_attr='id')
+
+        # Predict probabilities
+        predictions = model.run_prediction(unlabeled_pool)
+
+        # Calculate entropy based on probabilities
+        predictions['entropy'] = predictions['match_score'].apply(lambda p: -p * np.log(p) - (1 - p) * np.log(1 - p))
+
+        # Split in matches and non-matches (based on probabilities)
+        predictions_true = predictions[predictions['match_score']>=0.5]
+        predictions_false = predictions[predictions['match_score']<0.5]
+
+        # Select k pairs with highest entropy for active learning
+        low_conf_pairs_true = predictions_true['entropy'].nlargest(int(sampling_size/2))
+        low_conf_pairs_false = predictions_false['entropy'].nlargest(int(sampling_size/2))
+        
+        # Label these pairs with oracle and add them to labeled set
+        if labeled_set_raw is not None:
+            labeled_set_raw = labeled_set_raw.append(pool_data[pool_data['id'].isin(low_conf_pairs_true.index.tolist())])
+            labeled_set_raw = labeled_set_raw.append(pool_data[pool_data['id'].isin(low_conf_pairs_false.index.tolist())])
+        else:
+            labeled_set_raw = pool_data[pool_data['id'].isin(low_conf_pairs_true.index.tolist())]
+            labeled_set_raw = labeled_set_raw.append(pool_data[pool_data['id'].isin(low_conf_pairs_false.index.tolist())])
+
+        # Select k pairs with lowest entropy for data augmentation
+        high_conf_pairs_true = predictions_true['entropy'].nsmallest(int(sampling_size/2))
+        high_conf_pairs_false = predictions_false['entropy'].nsmallest(int(sampling_size/2))
+        
+        # Use prediction as label
+        # todo
+        # Add them to labeled set (based on flag)
+        # todo
+
+        #remove labeled pairs from unlabeled pool
+        pool_data = pool_data[~pool_data['id'].isin(labeled_set['id'].tolist())]
+        
+        # process labeled set for deepmatcher
+        labeled_set_raw.to_csv('labeled_set')
+
+        labeled_set = dm.data.process(
+            path=file_path,
+            train='labeled_set',
+            ignore_columns=('source_id', 'target_id'),
+            cache=None,
+            left_prefix='left_',
+            right_prefix='right_',
+            label_attr='label',
+            id_attr='id')
+
+        # Train model on labeled set 
+        model.run_train(
+            labeled_set,
+            validation_set,
+            epochs=1,
+            batch_size=16,
+            best_save_path='rnn_model.pth',
+            pos_neg_ratio=3)
+
+        # Save results
+        # todo (siehe Primpeli)
+
+        # Go to (1)
