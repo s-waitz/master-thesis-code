@@ -70,7 +70,7 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         # todo
 
         #remove labeled pairs from unlabeled pool
-        pool_data = pool_data[~pool_data['id'].isin(labeled_set['id'].tolist())]
+        pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
         
         # process labeled set for deepmatcher
         labeled_set_raw.to_csv('labeled_set', index=False)
