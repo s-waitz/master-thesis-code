@@ -8,7 +8,7 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
 
     labeled_set_raw = None
     
-    validation_data.to_csv(file_path + 'validation_set')
+    validation_data.to_csv(file_path + 'validation_set', index=False)
 
     validation_set = dm.data.process(
         path=file_path,
@@ -26,7 +26,7 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
     for i in range(num_runs):
 
         # process unlabeled pool for deepmatcher
-        pool_data.to_csv(file_path + 'unlabeled_pool')
+        pool_data.to_csv(file_path + 'unlabeled_pool', index=False)
 
         unlabeled_pool = dm.data.process(
             path=file_path,
@@ -73,7 +73,7 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         pool_data = pool_data[~pool_data['id'].isin(labeled_set['id'].tolist())]
         
         # process labeled set for deepmatcher
-        labeled_set_raw.to_csv('labeled_set')
+        labeled_set_raw.to_csv('labeled_set', index=False)
 
         labeled_set = dm.data.process(
             path=file_path,
