@@ -31,6 +31,9 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
     # (1)
     for i in range(num_runs):
 
+
+        print("AL run: " + i)
+
         # process unlabeled pool for deepmatcher
         pool_data.to_csv(file_path + 'unlabeled_pool', index=False)
 
@@ -107,12 +110,18 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         # todo (siehe Primpeli)
         prec, recall, fscore, support = precision_recall_fscore_support(
             validation_data['label'],
-            np.where(rnn.run_prediction(validation_set)['match_score'] >= 0.5, 1, 0),
+            np.where(model.run_prediction(validation_set)['match_score'] >= 0.5, 1, 0),
             average='binary')
 
         f1_scores.append(fscore)
         precision_scores.append(prec)
         recall_scores.append(recall)
 
-    return f1_scores, precision_scores, recall_scores
+    all_scores = pd.DataFrame(
+        {'f1': f1_scores,
+        'precision': precision_scores,
+        'recall': reccall_scores
+        })
+
+    return all_scores
         # Go to (1)
