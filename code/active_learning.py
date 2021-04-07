@@ -9,6 +9,9 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
     #todo: docstring
 
     labeled_set_raw = None
+
+    oracle = pool_data.copy()
+    pool_data = pool_data.drop('label',axis=1)
     
     validation_data.to_csv(file_path + 'validation_set', index=False)
 
@@ -38,15 +41,10 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         # process unlabeled pool for deepmatcher
         pool_data.to_csv(file_path + 'unlabeled_pool', index=False)
 
-        unlabeled_pool = dm.data.process(
-            path=file_path,
-            train='unlabeled_pool',
-            ignore_columns=('source_id', 'target_id'),
-            cache=None,
-            left_prefix='left_',
-            right_prefix='right_',
-            label_attr='label',
-            id_attr='id')
+        unlabeled_pool = dm.data.process_unlabeled(
+            path=file_path + 'unlabeled_pool',
+            trained_model=model,
+            ignore_columns=('source_id', 'target_id'))
 
         # Predict probabilities
         predictions = model.run_prediction(unlabeled_pool)
@@ -64,20 +62,24 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         
         # Label these pairs with oracle and add them to labeled set
         if labeled_set_raw is not None:
-            labeled_set_raw = labeled_set_raw.append(pool_data[pool_data['id'].isin(low_conf_pairs_true.index.tolist())])
-            labeled_set_raw = labeled_set_raw.append(pool_data[pool_data['id'].isin(low_conf_pairs_false.index.tolist())])
+            labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_true.index.tolist())])
+            labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_false.index.tolist())])
         else:
-            labeled_set_raw = pool_data[pool_data['id'].isin(low_conf_pairs_true.index.tolist())]
-            labeled_set_raw = labeled_set_raw.append(pool_data[pool_data['id'].isin(low_conf_pairs_false.index.tolist())])
+            labeled_set_raw = oracle[oracle['id'].isin(low_conf_pairs_true.index.tolist())]
+            labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_false.index.tolist())])
 
         # Select k pairs with lowest entropy for data augmentation
         high_conf_pairs_true = predictions_true['entropy'].nsmallest(int(sampling_size/2))
         high_conf_pairs_false = predictions_false['entropy'].nsmallest(int(sampling_size/2))
         
         # Use prediction as label
-        # todo
+        data_augmentation_true = pool_data[pool_data['id'].isin(high_conf_pairs_true.index.tolist())]
+        data_augmentation_true['label'] = 1
+        data_augmentation_false = pool_data[pool_data['id'].isin(high_conf_pairs_false.index.tolist())]
+        data_augmentation_false['label'] = 0
+
         # Add them to labeled set (based on flag)
-        # todo
+        labeled_set_raw = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
 
         #remove labeled pairs from unlabeled pool
         pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
