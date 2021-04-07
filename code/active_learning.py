@@ -20,6 +20,10 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         label_attr='label',
         id_attr='id')
 
+    f1_scores= []
+    precision_scores= []
+    recall_scores=[]
+
     # define labeled set (muss csv datei sein)
 
     # (1)
@@ -96,9 +100,17 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
             
         print("Size labeled set " + str(labeled_set_raw.shape[0]))
         print("Size unlabeled pool " + str(pool_data.shape[0]))
+
         # Save results
         # todo (siehe Primpeli)
+        prec, recall, fscore, support = precision_recall_fscore_support(
+            validation_data['label'],
+            np.where(rnn.run_prediction(validation_set)['match_score'] >= 0.5, 1, 0),
+            average='binary')
 
+        f1_scores.append(fscore)
+        precision_scores.append(prec)
+        recall_scores.append(recall)
 
-
+    return f1_scores, precision_scores, recall_scores
         # Go to (1)
