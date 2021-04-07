@@ -22,9 +22,10 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         label_attr='label',
         id_attr='id')
 
-    f1_scores= []
-    precision_scores= []
-    recall_scores=[]
+    f1_scores = []
+    precision_scores = []
+    recall_scores = []
+    labeled_set_size = []
 
     # define labeled set (muss csv datei sein)
 
@@ -32,7 +33,7 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
     for i in range(num_runs):
 
 
-        print("AL run: " + i)
+        print("AL run: " + str(i))
 
         # process unlabeled pool for deepmatcher
         pool_data.to_csv(file_path + 'unlabeled_pool', index=False)
@@ -116,11 +117,13 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         f1_scores.append(fscore)
         precision_scores.append(prec)
         recall_scores.append(recall)
+        labeled_set_size.append(labeled_set_raw.shape[0])
 
     all_scores = pd.DataFrame(
         {'f1': f1_scores,
         'precision': precision_scores,
-        'recall': reccall_scores
+        'recall': recall_scores,
+        'labeled set size': labeled_set_size
         })
 
     return all_scores
