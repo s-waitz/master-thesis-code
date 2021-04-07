@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from sklearn.metrics import precision_recall_fscore_support
+
 import deepmatcher as dm
 
 def active_learning(pool_data, validation_data, num_runs, sampling_size, model, file_path='', add_pairs=True):
