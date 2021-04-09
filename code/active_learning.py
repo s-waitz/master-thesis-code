@@ -5,8 +5,22 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(pool_data, validation_data, num_runs, sampling_size, model, file_path='', add_pairs=True):
-    #todo: docstring
+def active_learning(pool_data, validation_data, num_runs, sampling_size, model, file_path='', add_pairs=True, train_epochs=20, train_batch_size=16):
+    """    
+        Args:
+        pool_data (pd.DataFrame): ...
+        validation_data (pd.DataFrame): ...
+        num_runs (int): ...
+        sampling_size (int): ...
+        model (dm.MatchingModel): ...
+        file_path (str, optional): ... Defaults to ''.
+        add_pairs (bool, optional): Regular expression for filtering 
+            properties. Defaults to True.
+        train_epochs (int, optional): ... Defaults to 20.
+        train_batch_size (int, optional): ... Defaults to 16.
+    Returns:
+        pd.DataFrame: Dataframe containing results for every active learning run.
+    """
 
     labeled_set_raw = None
 
@@ -101,9 +115,9 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         model.run_train(
             labeled_set,
             validation_set,
-            epochs=20,
-            batch_size=16,
-            best_save_path='rnn_model.pth',
+            epochs=train_epochs,
+            batch_size=train_batch_size,
+            best_save_path='dm_model.pth',
             pos_neg_ratio=3)
             
         print("Size labeled set " + str(labeled_set_raw.shape[0]))
