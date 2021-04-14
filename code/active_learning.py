@@ -5,7 +5,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(pool_data, validation_data, num_runs, sampling_size, model, file_path='', add_pairs=True, train_epochs=20, train_batch_size=16):
+def active_learning(pool_data, validation_data, num_runs, sampling_size, model, file_path='', add_pairs=True, train_epochs=20, train_batch_size=16, embeddings='fasttext.en.bin'):
     """    
         Args:
         pool_data (pd.DataFrame): ...
@@ -14,10 +14,10 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         sampling_size (int): ...
         model (dm.MatchingModel): ...
         file_path (str, optional): ... Defaults to ''.
-        add_pairs (bool, optional): Regular expression for filtering 
-            properties. Defaults to True.
+        add_pairs (bool, optional): ... Defaults to True.
         train_epochs (int, optional): ... Defaults to 20.
         train_batch_size (int, optional): ... Defaults to 16.
+        embeddings (string, optional): http://pages.cs.wisc.edu/~sidharth/deepmatcher/data.html. Defaults to 'fasttext.en.bin'.
     Returns:
         pd.DataFrame: Dataframe containing results for every active learning run.
     """
@@ -37,7 +37,8 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         left_prefix='left_',
         right_prefix='right_',
         label_attr='label',
-        id_attr='id')
+        id_attr='id',
+        embeddings=embeddings)
 
     f1_scores = []
     precision_scores = []
@@ -109,7 +110,8 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
             left_prefix='left_',
             right_prefix='right_',
             label_attr='label',
-            id_attr='id')
+            id_attr='id',
+            embeddings=embeddings)
 
         # Train model on labeled set 
         model.run_train(
