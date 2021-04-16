@@ -5,15 +5,17 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(pool_data, validation_data, num_runs, sampling_size, model, file_path='', add_pairs=True, train_epochs=20, train_batch_size=16, embeddings='fasttext.en.bin'):
+def active_learning(train_data, validation_data, test_data, num_runs, sampling_size, model, file_path='', high_conf_to_ls=True, train_epochs=20, train_batch_size=16, embeddings='fasttext.en.bin'):
     """    
         Args:
-        pool_data (pd.DataFrame): ...
+        train_data (pd.DataFrame): ...
         validation_data (pd.DataFrame): ...
+        test_data (pd.DataFrame): ...
         num_runs (int): ...
         sampling_size (int): ...
         model (dm.MatchingModel): ...
         file_path (str, optional): ... Defaults to ''.
+        high_conf_to_ls: ... Defaults to True.
         add_pairs (bool, optional): ... Defaults to True.
         train_epochs (int, optional): ... Defaults to 20.
         train_batch_size (int, optional): ... Defaults to 16.
@@ -24,28 +26,17 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
 
     labeled_set_raw = None
 
-    oracle = pool_data.copy()
-    pool_data = pool_data.drop('label',axis=1)
-    
-    validation_data.to_csv(file_path + 'validation_set', index=False)
+    oracle = train_data.copy()
+    pool_data = train_data.drop('label',axis=1)
 
-    validation_set = dm.data.process(
-        path=file_path,
-        validation='validation_set',
-        ignore_columns=('source_id', 'target_id'),
-        cache=None,
-        left_prefix='left_',
-        right_prefix='right_',
-        label_attr='label',
-        id_attr='id',
-        embeddings=embeddings)
+    # write data to csv for later processing
+    validation_data.to_csv(file_path + 'validation_set', index=False)
+    test_data.to_csv(file_path + 'test_set', index=False)
 
     f1_scores = []
     precision_scores = []
     recall_scores = []
     labeled_set_size = []
-
-    # define labeled set (muss csv datei sein)
 
     # (1)
     for i in range(num_runs):
@@ -94,19 +85,24 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         data_augmentation_false['label'] = 0
 
         # Add them to labeled set (based on flag)
-        labeled_set_raw = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
+        if high_conf_to_ls:
+            labeled_set_raw = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
+            labeled_set_temp = labeled_set_raw
+        else:
+            labeled_set_temp = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
 
         #remove labeled pairs from unlabeled pool
         pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
         
         # process labeled set for deepmatcher
-        labeled_set_raw.to_csv('labeled_set', index=False)
+        labeled_set_temp.to_csv('labeled_set', index=False)
 
-        labeled_set = dm.data.process(
+        labeled_set, validation_set, test_set = dm.data.process(
             path=file_path,
             train='labeled_set',
+            validation='validation_set',
+            test='test_set',
             ignore_columns=('source_id', 'target_id'),
-            cache=None,
             left_prefix='left_',
             right_prefix='right_',
             label_attr='label',
@@ -117,7 +113,7 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         model.run_train(
             labeled_set,
             validation_set,
-            epochs=train_epochs,
+            epochs=train_epochs, 
             batch_size=train_batch_size,
             best_save_path='dm_model.pth',
             pos_neg_ratio=3)
@@ -126,10 +122,10 @@ def active_learning(pool_data, validation_data, num_runs, sampling_size, model, 
         print("Size unlabeled pool " + str(pool_data.shape[0]))
 
         # Save results
-        # todo (siehe Primpeli)
+        # todo
         prec, recall, fscore, support = precision_recall_fscore_support(
-            validation_data['label'],
-            np.where(model.run_prediction(validation_set)['match_score'] >= 0.5, 1, 0),
+            test_data['label'],
+            np.where(model.run_prediction(test_set)['match_score'] >= 0.5, 1, 0),
             average='binary')
 
         f1_scores.append(fscore)
