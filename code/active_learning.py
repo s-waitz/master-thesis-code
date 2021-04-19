@@ -33,6 +33,18 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
     validation_data.to_csv(file_path + 'validation_set', index=False)
     test_data.to_csv(file_path + 'test_set', index=False)
 
+    validation_set, test_set = dm.data.process(
+        path=file_path,
+        validation='validation_set',
+        test='test_set',
+        ignore_columns=('source_id', 'target_id'),
+        left_prefix='left_',
+        right_prefix='right_',
+        label_attr='label',
+        id_attr='id',
+        cache=None,
+        embeddings=embeddings)
+
     f1_scores = []
     precision_scores = []
     recall_scores = []
@@ -97,16 +109,15 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
         # process labeled set for deepmatcher
         labeled_set_temp.to_csv('labeled_set', index=False)
 
-        labeled_set, validation_set, test_set = dm.data.process(
+        labeled_set = dm.data.process(
             path=file_path,
             train='labeled_set',
-            validation='validation_set',
-            test='test_set',
             ignore_columns=('source_id', 'target_id'),
             left_prefix='left_',
             right_prefix='right_',
             label_attr='label',
             id_attr='id',
+            cache=None,
             embeddings=embeddings)
 
         # Train model on labeled set 
