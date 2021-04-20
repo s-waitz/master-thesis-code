@@ -145,10 +145,10 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
         labeled_set_size.append(labeled_set_raw.shape[0])
 
     all_scores = pd.DataFrame(
-        {'f1': f1_scores,
+        {'labeled set size': labeled_set_size,
+        'f1': f1_scores,
         'precision': precision_scores,
-        'recall': recall_scores,
-        'labeled set size': labeled_set_size
+        'recall': recall_scores
         })
 
     return all_scores
