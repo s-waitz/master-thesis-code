@@ -5,7 +5,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, num_runs, sampling_size, model, file_path='', high_conf_to_ls=True, train_epochs=20, train_batch_size=16, embeddings='fasttext.en.bin'):
+def active_learning(train_data, validation_data, test_data, num_runs, sampling_size, model, ignore_columns, file_path, high_conf_to_ls, train_epochs, train_batch_size, embeddings, pos_neg_ratio, path_al_model):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -37,7 +37,7 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
         path=file_path,
         validation='validation_set',
         test='test_set',
-        ignore_columns=('source_id', 'target_id'),
+        ignore_columns=ignore_columns,
         left_prefix='left_',
         right_prefix='right_',
         label_attr='label',
@@ -62,7 +62,7 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
         unlabeled_pool = dm.data.process_unlabeled(
             path=file_path + 'unlabeled_pool',
             trained_model=model,
-            ignore_columns=('source_id', 'target_id'))
+            ignore_columns=ignore_columns)
 
         # Predict probabilities
         predictions = model.run_prediction(unlabeled_pool)
@@ -112,7 +112,7 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
         labeled_set = dm.data.process(
             path=file_path,
             train='labeled_set',
-            ignore_columns=('source_id', 'target_id'),
+            ignore_columns=ignore_columns,
             left_prefix='left_',
             right_prefix='right_',
             label_attr='label',
@@ -126,8 +126,8 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
             validation_set,
             epochs=train_epochs, 
             batch_size=train_batch_size,
-            best_save_path='dm_model.pth',
-            pos_neg_ratio=3)
+            best_save_path=path_al_model,
+            pos_neg_ratio=pos_neg_ratio)
             
         print("Size labeled set " + str(labeled_set_raw.shape[0]))
         print("Size unlabeled pool " + str(pool_data.shape[0]))
