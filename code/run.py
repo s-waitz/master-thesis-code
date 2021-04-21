@@ -53,8 +53,8 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
     results_al['Attribute Summarizer']=attr_summarizer
     results_al['Attribute Comparator']=attr_comparator
     results_al['Embeddings']=embeddings
-    results_al['Epochs']=train_epochs
-    results_al['Batch Size']=train_batch_size
+    results_al['Epochs']=epochs
+    results_al['Batch Size']=batch_size
     results_al.to_csv(save_results_file, index=False)
 
     return results_al
