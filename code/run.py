@@ -55,6 +55,7 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
     results_al['Embeddings']=embeddings
     results_al['Epochs']=epochs
     results_al['Batch Size']=batch_size
+    results_al['Pos.Neg.Ratio']=pos_neg_ratio
     results_al.to_csv(save_results_file, index=False)
 
     return results_al
