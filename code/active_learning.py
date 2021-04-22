@@ -30,11 +30,11 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
     pool_data = train_data.drop('label',axis=1)
 
     # write data to csv for later processing
-    validation_data.to_csv(file_path + 'validation_set', index=False)
-    test_data.to_csv(file_path + 'test_set', index=False)
+    validation_data.to_csv('validation_set', index=False)
+    test_data.to_csv('test_set', index=False)
 
     validation_set, test_set = dm.data.process(
-        path=file_path,
+        path='',
         validation='validation_set',
         test='test_set',
         ignore_columns=ignore_columns,
@@ -57,10 +57,10 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
         print("AL run: " + str(i))
 
         # process unlabeled pool for deepmatcher
-        pool_data.to_csv(file_path + 'unlabeled_pool', index=False)
+        pool_data.to_csv('unlabeled_pool', index=False)
 
         unlabeled_pool = dm.data.process_unlabeled(
-            path=file_path + 'unlabeled_pool',
+            path='unlabeled_pool',
             trained_model=model,
             ignore_columns=ignore_columns)
 
@@ -110,7 +110,7 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
         labeled_set_temp.to_csv('labeled_set', index=False)
 
         labeled_set = dm.data.process(
-            path=file_path,
+            path='',
             train='labeled_set',
             ignore_columns=ignore_columns,
             left_prefix='left_',

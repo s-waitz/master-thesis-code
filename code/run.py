@@ -3,7 +3,7 @@ from active_learning import *
 import deepmatcher as dm
 import pandas as pd
 
-def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learning_dataset=None, ignore_columns=('source_id','target_id'), file_path='', high_conf_to_ls=False, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_tl_model='tl_model.pth', path_al_model='al_model.pth'):
+def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learning_dataset=None, ignore_columns=('source_id','target_id'), file_path='', high_conf_to_ls=False, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_tl_model='tl_model.pth', path_al_model='al_model.pth', embeddings_cache_path='~/.vector_cache'):
     
     # Load datasets
     train_data = pd.read_csv(file_path + dataset + '_train')
@@ -27,7 +27,8 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
             label_attr='label',
             id_attr='id',
             cache=False,
-            embeddings=embeddings)
+            embeddings=embeddings,
+            embeddings_cache_path=embeddings_cache_path)
 
         model.run_train(
             train_tl,
