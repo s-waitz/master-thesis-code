@@ -39,7 +39,53 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
             pos_neg_ratio=pos_neg_ratio)
 
     else:
-        pass
+        init_method = 'Random Initialization'
+
+        train_data.to_csv('train_set', index=False)
+
+        train_set = dm.data.process(
+            path='',
+            train='train_set',
+            ignore_columns=ignore_columns,
+            left_prefix='left_',
+            right_prefix='right_',
+            label_attr='label',
+            id_attr='id',
+            cache=None,
+            embeddings=embeddings,
+            embeddings_cache_path=embeddings_cache_path)
+
+        model.initialize(train_set)
+
+        # workaround
+        model.meta.__dict__.update({'lowercase': True})
+        model.meta.__dict__.update({'tokenize': 'nltk'})
+        model.meta.__dict__.update({'include_lengths': True})
+        model.__dict__.update({'epoch':0})
+
+        # init_method='200 Random Examples'
+        # labeled_set = pd.read_csv(file_path+dataset+'_train').sample(n=200, weights=None, axis=None)
+        # labeled_set.to_csv(file_path+'labeled_set',index=False)
+        # labeled_set_train, validation_set, test_set = dm.data.process(
+        #     path=file_path,
+        #     train='labeled_set',
+        #     validation=dataset+'_validation',
+        #     test=dataset+'_test',
+        #     ignore_columns=ignore_columns,
+        #     left_prefix='left_',
+        #     right_prefix='right_',
+        #     label_attr='label',
+        #     id_attr='id',
+        #     cache=False,
+        #     embeddings=embeddings,
+        #     embeddings_cache_path=embeddings_cache_path)
+        # model.run_train(
+        #     labeled_set_train,
+        #     validation_set,
+        #     epochs=epochs,
+        #     batch_size=batch_size,
+        #     best_save_path=path_tl_model,
+        #     pos_neg_ratio=pos_neg_ratio)
 
     results_al = active_learning(train_data, validation_data, test_data,
         num_runs, sampling_size, model, ignore_columns, file_path, high_conf_to_ls,

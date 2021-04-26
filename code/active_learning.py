@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import copy
 
 from sklearn.metrics import precision_recall_fscore_support
 
@@ -27,7 +28,7 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
     labeled_set_raw = None
 
     oracle = train_data.copy()
-    pool_data = train_data.drop('label',axis=1)
+    pool_data = train_data.copy()
 
     # write data to csv for later processing
     validation_data.to_csv('validation_set', index=False)
@@ -51,21 +52,35 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
     labeled_set_size = []
 
     # (1)
-    for i in range(num_runs):
+    for i in range(1,num_runs+1):
 
 
         print("AL run: " + str(i))
 
         # process unlabeled pool for deepmatcher
-        pool_data.to_csv('unlabeled_pool', index=False)
+        #pool_data.to_csv('unlabeled_pool', index=False)
 
-        unlabeled_pool = dm.data.process_unlabeled(
-            path='unlabeled_pool',
-            trained_model=model,
-            ignore_columns=ignore_columns)
+        #unlabeled_pool = dm.data.process_unlabeled(
+        #    path='unlabeled_pool',
+        #    trained_model=model,
+        #    ignore_columns=ignore_columns)
+        pool_data.to_csv('train_set', index=False)
+        train_set = dm.data.process(
+            path='',
+            train='train_set',
+            ignore_columns=ignore_columns,
+            left_prefix='left_',
+            right_prefix='right_',
+            label_attr='label',
+            id_attr='id',
+            cache=None,
+            embeddings=embeddings)
+
+        if i == 1:
+            model._reset_embeddings(train_set.vocabs)
 
         # Predict probabilities
-        predictions = model.run_prediction(unlabeled_pool)
+        predictions = model.run_prediction(train_set)
 
         # Calculate entropy based on probabilities
         predictions['entropy'] = predictions['match_score'].apply(lambda p: -p * np.log(p) - (1 - p) * np.log(1 - p))
