@@ -162,7 +162,7 @@ def run_pl(dataset, save_results_file, ignore_columns=('source_id','target_id'),
                                         'Attr.Comparator','Embeddings','Epochs',
                                         'Batch Size','Pos.Neg.Ratio'])
 
-    results_pl.append({'Dataset':dataset,'Method':'Passive Learing','Date':date.today().strftime("%d.%m.%Y"),
+    results_pl = results_pl.append({'Dataset':dataset,'Method':'Passive Learing','Date':date.today().strftime("%d.%m.%Y"),
                    'F1':fscore,'Precision':prec,'Recall':recall,'Runtime':(end_time - start_time),
                    'Attr.Summarizer':attr_summarizer,'Attr.Comparator':attr_comparator,
                    'Embeddings':embeddings,'Epochs':epochs,'Batch Size':batch_size,
