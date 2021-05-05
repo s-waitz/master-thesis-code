@@ -6,7 +6,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, embeddings, pos_neg_ratio, path_al_model):
+def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, embeddings, pos_neg_ratio, path_al_model):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -76,7 +76,7 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
             cache=None,
             embeddings=embeddings)
 
-        if i == 1:
+        if i == 1 and init_method == 'Transfer Learning':
             model._reset_embeddings(train_set.vocabs)
 
         # Predict probabilities
