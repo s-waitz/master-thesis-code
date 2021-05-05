@@ -7,7 +7,7 @@ from datetime import date
 
 from sklearn.metrics import precision_recall_fscore_support
 
-def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learning_dataset=None, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=True, high_conf_to_ls=False, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_tl_model='tl_model.pth', path_al_model='al_model.pth', embeddings_cache_path='~/.vector_cache'):
+def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=True, high_conf_to_ls=False, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_tl_model='tl_model.pth', path_al_model='al_model.pth', embeddings_cache_path='~/.vector_cache'):
     
     # Load datasets
     train_data = pd.read_csv(file_path + dataset + '_train')
@@ -43,13 +43,16 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
             pos_neg_ratio=pos_neg_ratio)
 
     else:
-        init_method = 'Random Initialization'
+        init_method = 'Random Sample'
+        random_train_data = train_data.sample(n=init_random_sample, weights=None, axis=None)
+        random_train_data.to_csv('random_train_set', index=False)
+        random_validation_data = validation_data.sample(n=init_random_sample/3, weights=None, axis=None)
+        random_validation_data.to_csv('random_validation_set', index=False)
 
-        train_data.to_csv('train_set', index=False)
-
-        train_set = dm.data.process(
+        random_train_set,random_validation_set = dm.data.process(
             path='',
-            train='train_set',
+            train='random_train_set',
+            validation='random_validation_set',
             ignore_columns=ignore_columns,
             left_prefix='left_',
             right_prefix='right_',
@@ -59,37 +62,13 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
             embeddings=embeddings,
             embeddings_cache_path=embeddings_cache_path)
 
-        model.initialize(train_set)
-
-        # workaround
-        model.meta.__dict__.update({'lowercase': True})
-        model.meta.__dict__.update({'tokenize': 'nltk'})
-        model.meta.__dict__.update({'include_lengths': True})
-        model.__dict__.update({'epoch':0})
-
-        # init_method='200 Random Examples'
-        # labeled_set = pd.read_csv(file_path+dataset+'_train').sample(n=200, weights=None, axis=None)
-        # labeled_set.to_csv(file_path+'labeled_set',index=False)
-        # labeled_set_train, validation_set, test_set = dm.data.process(
-        #     path=file_path,
-        #     train='labeled_set',
-        #     validation=dataset+'_validation',
-        #     test=dataset+'_test',
-        #     ignore_columns=ignore_columns,
-        #     left_prefix='left_',
-        #     right_prefix='right_',
-        #     label_attr='label',
-        #     id_attr='id',
-        #     cache=False,
-        #     embeddings=embeddings,
-        #     embeddings_cache_path=embeddings_cache_path)
-        # model.run_train(
-        #     labeled_set_train,
-        #     validation_set,
-        #     epochs=epochs,
-        #     batch_size=batch_size,
-        #     best_save_path=path_tl_model,
-        #     pos_neg_ratio=pos_neg_ratio)
+        model.run_train(
+            random_train_set,
+            random_validation_set,
+            epochs=epochs,
+            batch_size=batch_size,
+            best_save_path='init_model.pth',
+            pos_neg_ratio=pos_neg_ratio)
 
     results_al = active_learning(train_data, validation_data, test_data, init_method,
         num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation,
