@@ -7,7 +7,7 @@ from datetime import date
 
 from sklearn.metrics import precision_recall_fscore_support
 
-def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learning_dataset=None, ignore_columns=('source_id','target_id'), file_path='', high_conf_to_ls=False, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_tl_model='tl_model.pth', path_al_model='al_model.pth', embeddings_cache_path='~/.vector_cache'):
+def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learning_dataset=None, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=True, high_conf_to_ls=False, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_tl_model='tl_model.pth', path_al_model='al_model.pth', embeddings_cache_path='~/.vector_cache'):
     
     # Load datasets
     train_data = pd.read_csv(file_path + dataset + '_train')
@@ -91,25 +91,27 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
         #     best_save_path=path_tl_model,
         #     pos_neg_ratio=pos_neg_ratio)
 
-    results_pl = active_learning(train_data, validation_data, test_data,
-        num_runs, sampling_size, model, ignore_columns, file_path, high_conf_to_ls,
-        epochs, batch_size, embeddings, pos_neg_ratio, path_al_model)
+    results_al = active_learning(train_data, validation_data, test_data,
+        num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation,
+        high_conf_to_ls, epochs, batch_size, embeddings, pos_neg_ratio, path_al_model)
 
     # build final results dataframe and save results
-    results_pl['Dataset']=dataset
-    results_pl['Initialization Method']=init_method
-    results_pl['Transfer Learning Dataset']=transfer_learning_dataset
-    results_pl['AL Runs']=num_runs
-    results_pl['Sampling Size']=sampling_size
-    results_pl['Attribute Summarizer']=attr_summarizer
-    results_pl['Attribute Comparator']=attr_comparator
-    results_pl['Embeddings']=embeddings
-    results_pl['Epochs']=epochs
-    results_pl['Batch Size']=batch_size
-    results_pl['Pos.Neg.Ratio']=pos_neg_ratio
-    results_pl.to_csv(save_results_file, index=False)
+    results_al['Dataset']=dataset
+    results_al['Initialization Method']=init_method
+    results_al['Transfer Learning Dataset']=transfer_learning_dataset
+    results_al['AL Runs']=num_runs
+    results_al['Sampling Size']=sampling_size
+    results_al['Attribute Summarizer']=attr_summarizer
+    results_al['Attribute Comparator']=attr_comparator
+    results_al['Embeddings']=embeddings
+    results_al['Epochs']=epochs
+    results_al['Batch Size']=batch_size
+    results_al['Pos.Neg.Ratio']=pos_neg_ratio
+    results_al['Data Augmentation']=data_augmentation
+    results_al['High.Conf.LS']=high_conf_to_ls
+    results_al.to_csv(save_results_file, index=False)
 
-    return results_pl
+    return results_al
 
 
 def run_pl(dataset, save_results_file, ignore_columns=('source_id','target_id'), file_path='', attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_pl_model='pl_model.pth', embeddings_cache_path='~/.vector_cache'):

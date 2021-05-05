@@ -6,7 +6,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, num_runs, sampling_size, model, ignore_columns, file_path, high_conf_to_ls, train_epochs, train_batch_size, embeddings, pos_neg_ratio, path_al_model):
+def active_learning(train_data, validation_data, test_data, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, embeddings, pos_neg_ratio, path_al_model):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -101,22 +101,23 @@ def active_learning(train_data, validation_data, test_data, num_runs, sampling_s
             labeled_set_raw = oracle[oracle['id'].isin(low_conf_pairs_true.index.tolist())]
             labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_false.index.tolist())])
 
-        # Select k pairs with lowest entropy for data augmentation
-        high_conf_pairs_true = predictions_true['entropy'].nsmallest(int(sampling_size/2))
-        high_conf_pairs_false = predictions_false['entropy'].nsmallest(int(sampling_size/2))
-        
-        # Use prediction as label
-        data_augmentation_true = pool_data[pool_data['id'].isin(high_conf_pairs_true.index.tolist())]
-        data_augmentation_true['label'] = 1
-        data_augmentation_false = pool_data[pool_data['id'].isin(high_conf_pairs_false.index.tolist())]
-        data_augmentation_false['label'] = 0
+        if data_augmentation:
+            # Select k pairs with lowest entropy for data augmentation
+            high_conf_pairs_true = predictions_true['entropy'].nsmallest(int(sampling_size/2))
+            high_conf_pairs_false = predictions_false['entropy'].nsmallest(int(sampling_size/2))
+            
+            # Use prediction as label
+            data_augmentation_true = pool_data[pool_data['id'].isin(high_conf_pairs_true.index.tolist())]
+            data_augmentation_true['label'] = 1
+            data_augmentation_false = pool_data[pool_data['id'].isin(high_conf_pairs_false.index.tolist())]
+            data_augmentation_false['label'] = 0
 
-        # Add them to labeled set (based on flag)
-        if high_conf_to_ls:
-            labeled_set_raw = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
-            labeled_set_temp = labeled_set_raw
-        else:
-            labeled_set_temp = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
+            # Add them to labeled set (based on flag)
+            if high_conf_to_ls:
+                labeled_set_raw = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
+                labeled_set_temp = labeled_set_raw
+            else:
+                labeled_set_temp = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
 
         #remove labeled pairs from unlabeled pool
         pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
