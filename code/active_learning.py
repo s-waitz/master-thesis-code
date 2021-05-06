@@ -118,6 +118,8 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
                 labeled_set_temp = labeled_set_raw
             else:
                 labeled_set_temp = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
+        else:
+            labeled_set_temp = labeled_set_raw
 
         #remove labeled pairs from unlabeled pool
         pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]

@@ -43,16 +43,17 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
             pos_neg_ratio=pos_neg_ratio)
 
     else:
-        init_method = 'Random Sample'
+        init_method = 'Random Sample ' + str(init_random_sample)
         random_train_data = train_data.sample(n=init_random_sample, weights=None, axis=None)
         random_train_data.to_csv('random_train_set', index=False)
-        random_validation_data = validation_data.sample(n=init_random_sample/3, weights=None, axis=None)
+        random_validation_data = validation_data.sample(n=int(init_random_sample/3), weights=None, axis=None)
         random_validation_data.to_csv('random_validation_set', index=False)
 
-        random_train_set,random_validation_set = dm.data.process(
+        random_train_set, random_validation_set, _ = dm.data.process(
             path='',
             train='random_train_set',
             validation='random_validation_set',
+            test=file_path + dataset + '_train',
             ignore_columns=ignore_columns,
             left_prefix='left_',
             right_prefix='right_',
@@ -93,12 +94,27 @@ def run_al(dataset, num_runs, sampling_size, save_results_file, transfer_learnin
     return results_al
 
 
-def run_pl(dataset, save_results_file, ignore_columns=('source_id','target_id'), file_path='', attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_pl_model='pl_model.pth', embeddings_cache_path='~/.vector_cache'):
+def run_pl(dataset, save_results_file, train_size=None, ignore_columns=('source_id','target_id'), file_path='', attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_pl_model='pl_model.pth', embeddings_cache_path='~/.vector_cache'):
 
     # Load datasets
-    train_data = pd.read_csv(file_path + dataset + '_train')
-    validation_data = pd.read_csv(file_path + dataset + '_validation')
-    test_data = pd.read_csv(file_path + dataset + '_test')
+
+    if train_size:
+        # select samples
+        train_data = pd.read_csv(file_path + dataset + '_train').sample(n=train_size, weights=None, axis=None)
+        validation_data = pd.read_csv(file_path + dataset + '_validation').sample(n=int(train_size/3), weights=None, axis=None)
+        test_data = pd.read_csv(file_path + dataset + '_test').sample(n=int(train_size/3), weights=None, axis=None)
+        
+        # rewrite samples to csv
+        train_data.to_csv(dataset + '_train', index=False)
+        validation_data.to_csv(dataset + '_validation', index=False)
+        test_data.to_csv(dataset + '_test', index=False)
+
+        # reset file path
+        file_path = ''
+    else:
+        train_data = pd.read_csv(file_path + dataset + '_train')
+        validation_data = pd.read_csv(file_path + dataset + '_validation')
+        test_data = pd.read_csv(file_path + dataset + '_test')
 
     model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
 
@@ -138,13 +154,13 @@ def run_pl(dataset, save_results_file, ignore_columns=('source_id','target_id'),
     try:
         results_pl = pd.read_csv(save_results_file)
     except:
-        results_pl = pd.DataFrame(columns = ['Dataset','Method','Date','F1',
+        results_pl = pd.DataFrame(columns = ['Dataset','Method','Date','Train Size', 'F1',
                                         'Precision','Recall','Runtime','Attr.Summarizer',
                                         'Attr.Comparator','Embeddings','Epochs',
                                         'Batch Size','Pos.Neg.Ratio'])
 
     results_pl = results_pl.append({'Dataset':dataset,'Method':'Passive Learing','Date':date.today().strftime("%d.%m.%Y"),
-                   'F1':fscore,'Precision':prec,'Recall':recall,'Runtime':(end_time - start_time),
+                   'Train Size':train_size,'F1':fscore,'Precision':prec,'Recall':recall,'Runtime':(end_time - start_time),
                    'Attr.Summarizer':attr_summarizer,'Attr.Comparator':attr_comparator,
                    'Embeddings':embeddings,'Epochs':epochs,'Batch Size':batch_size,
                    'Pos.Neg.Ratio':pos_neg_ratio}, ignore_index=True)
