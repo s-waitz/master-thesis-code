@@ -37,7 +37,7 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
     validation_set, test_set = dm.data.process(
         path='',
         validation='validation_set',
-        test='test_set',
+        test='test_set', 
         ignore_columns=ignore_columns,
         left_prefix='left_',
         right_prefix='right_',
@@ -152,14 +152,14 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
 
         # Save results
         # todo
-        prec, recall, fscore, support = precision_recall_fscore_support(
+        prec, recall, fscore, _ = precision_recall_fscore_support(
             test_data['label'],
             np.where(model.run_prediction(test_set)['match_score'] >= 0.5, 1, 0),
             average='binary')
 
-        f1_scores.append(fscore)
-        precision_scores.append(prec)
-        recall_scores.append(recall)
+        f1_scores.append(round(fscore,3))
+        precision_scores.append(round(prec,3))
+        recall_scores.append(round(recall,3))
         labeled_set_size.append(labeled_set_raw.shape[0])
 
     all_scores = pd.DataFrame(

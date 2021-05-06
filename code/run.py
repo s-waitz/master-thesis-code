@@ -146,7 +146,7 @@ def run_pl(dataset, save_results_file, train_size=None, ignore_columns=('source_
     end_time = time.time()
 
     # Evaluate model
-    prec, recall, fscore, support = precision_recall_fscore_support(
+    prec, recall, fscore, _ = precision_recall_fscore_support(
         test_data['label'],
         np.where(model.run_prediction(test_set)['match_score'] >= 0.5, 1, 0),
         average='binary')
@@ -160,7 +160,7 @@ def run_pl(dataset, save_results_file, train_size=None, ignore_columns=('source_
                                         'Batch Size','Pos.Neg.Ratio'])
 
     results_pl = results_pl.append({'Dataset':dataset,'Method':'Passive Learing','Date':date.today().strftime("%d.%m.%Y"),
-                   'Train Size':train_size,'F1':fscore,'Precision':prec,'Recall':recall,'Runtime':(end_time - start_time),
+                   'Train Size':train_size,'F1':round(fscore,3),'Precision':round(prec,3),'Recall':round(recall,3),'Runtime':round(end_time - start_time,3),
                    'Attr.Summarizer':attr_summarizer,'Attr.Comparator':attr_comparator,
                    'Embeddings':embeddings,'Epochs':epochs,'Batch Size':batch_size,
                    'Pos.Neg.Ratio':pos_neg_ratio}, ignore_index=True)
