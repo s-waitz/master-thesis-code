@@ -6,7 +6,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, embeddings, pos_neg_ratio, path_al_model):
+def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, embeddings, pos_neg_ratio, path_al_model, attr_summarizer, attr_comparator):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -137,6 +137,9 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
             id_attr='id',
             cache=None,
             embeddings=embeddings)
+
+        # new model in each iteration
+        model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
 
         # Train model on labeled set 
         model.run_train(
