@@ -127,9 +127,10 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
         # process labeled set for deepmatcher
         labeled_set_temp.to_csv('labeled_set', index=False)
 
-        labeled_set = dm.data.process(
+        labeled_set,validation_set = dm.data.process(
             path='',
             train='labeled_set',
+            validation='validation_set',
             ignore_columns=ignore_columns,
             left_prefix='left_',
             right_prefix='right_',
