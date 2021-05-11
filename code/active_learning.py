@@ -6,7 +6,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, embeddings, pos_neg_ratio, path_al_model, attr_summarizer, attr_comparator):
+def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, embeddings, path_al_model, attr_summarizer, attr_comparator):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -124,6 +124,10 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
         #remove labeled pairs from unlabeled pool
         pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
         
+        # calculate positive negative ratio
+        pn_ratio = round((labeled_set_temp['label'].shape[0] - labeled_set_temp['label'].sum()) / labeled_set_temp['label'].sum())
+        print('Positve Negative Ratio: ' + str(pn_ratio))
+
         # process labeled set for deepmatcher
         labeled_set_temp.to_csv('labeled_set', index=False)
 
@@ -149,7 +153,7 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
             epochs=train_epochs, 
             batch_size=train_batch_size,
             best_save_path=path_al_model,
-            pos_neg_ratio=pos_neg_ratio)
+            pos_neg_ratio=pn_ratio)
             
         print("Size labeled set " + str(labeled_set_raw.shape[0]))
         print("Size unlabeled pool " + str(pool_data.shape[0]))

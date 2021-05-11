@@ -76,7 +76,7 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
 
     results_al = active_learning(train_data, validation_data, test_data, init_method,
         num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation,
-        high_conf_to_ls, epochs, batch_size, embeddings, pos_neg_ratio, path_al_model,
+        high_conf_to_ls, epochs, batch_size, embeddings, path_al_model,
         attr_summarizer, attr_comparator)
 
     # filename results
