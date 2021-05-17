@@ -8,7 +8,7 @@ import os.path
 
 from sklearn.metrics import precision_recall_fscore_support
 
-def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=True, high_conf_to_ls=False, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, path_tl_model='tl_model.pth', path_al_model='al_model.pth', embeddings_cache_path='~/.vector_cache'):
+def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=True, high_conf_to_ls=False, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, pos_neg_ratio=1, lr_decay=1, path_tl_model='tl_model.pth', path_al_model='al_model.pth', embeddings_cache_path='~/.vector_cache'):
     
     # Load datasets
     train_data = pd.read_csv(file_path + dataset + '_train')
@@ -76,7 +76,7 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
 
     results_al = active_learning(train_data, validation_data, test_data, init_method,
         num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation,
-        high_conf_to_ls, epochs, batch_size, embeddings, path_al_model,
+        high_conf_to_ls, epochs, batch_size, lr_decay, embeddings, path_al_model,
         attr_summarizer, attr_comparator)
 
     # filename results
@@ -85,8 +85,8 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
     
     while True:
         
-        save_results_file = save_results_path + 'al_{}_runs{}_ss{}_init_{}_da_{}_hc_{}_model_{}_epochs{}_batch{}_{}_{}.csv'.format(
-            dataset,num_runs,sampling_size,init,data_augmentation,high_conf_to_ls,attr_summarizer,epochs,batch_size,day,x)
+        save_results_file = save_results_path + 'al_{}_runs{}_ss{}_init_{}_da_{}_hc_{}_model_{}_epochs{}_batch{}_lrdecay{}_{}_{}.csv'.format(
+            dataset,num_runs,sampling_size,init,data_augmentation,high_conf_to_ls,attr_summarizer,epochs,batch_size,lr_decay,day,x)
         
         if os.path.isfile(save_results_file):
             # increase iterator if file already exists
@@ -105,6 +105,7 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
     results_al['Embeddings']=embeddings
     results_al['Epochs']=epochs
     results_al['Batch Size']=batch_size
+    results_al['LR Decay']=lr_decay
     results_al['Pos.Neg.Ratio']=pos_neg_ratio
     results_al['Data Augmentation']=data_augmentation
     results_al['High.Conf.LS']=high_conf_to_ls

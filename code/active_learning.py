@@ -6,7 +6,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, embeddings, path_al_model, attr_summarizer, attr_comparator):
+def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -92,6 +92,8 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
         # Select k pairs with highest entropy for active learning
         low_conf_pairs_true = predictions_true['entropy'].nlargest(int(sampling_size/2))
         low_conf_pairs_false = predictions_false['entropy'].nlargest(int(sampling_size/2))
+        print('low_conf_pairs_true ' + str(low_conf_pairs_true.shape[0]))
+        print('low_conf_pairs_false ' + str(low_conf_pairs_false.shape[0]))
         
         # Label these pairs with oracle and add them to labeled set
         if labeled_set_raw is not None:
@@ -100,6 +102,8 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
         else:
             labeled_set_raw = oracle[oracle['id'].isin(low_conf_pairs_true.index.tolist())]
             labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_false.index.tolist())])
+            
+        print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
 
         if data_augmentation:
             # Select k pairs with lowest entropy for data augmentation
@@ -145,6 +149,9 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
 
         # new model in each iteration
         model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
+        
+        # new optimizer in each iteration
+        optimizer = dm.optim.Optimizer(lr_decay=lr_decay)
 
         # Train model on labeled set 
         model.run_train(
@@ -153,6 +160,7 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
             epochs=train_epochs, 
             batch_size=train_batch_size,
             best_save_path=path_al_model,
+            optimizer=optimizer,
             pos_neg_ratio=pn_ratio)
             
         print("Size labeled set " + str(labeled_set_raw.shape[0]))
