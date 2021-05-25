@@ -115,7 +115,9 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
                 # select pairs with high probability for data augmentation
                 high_conf_pairs_true = predictions[predictions['match_score']>=da_threshold]
                 # select pairs with low probability for data augmentation
-                high_conf_pairs_false = predictions[predictions['match_score']<=(100-da_threshold)]
+                high_conf_pairs_false = predictions[predictions['match_score']<=(1-da_threshold)]
+                print("Data Augmentation True: " + str(high_conf_pairs_true.shape[0]))
+                print("Data Augmentation False: " + str(high_conf_pairs_false.shape[0]))
                 
             # Use prediction as label
             data_augmentation_true = pool_data[pool_data['id'].isin(high_conf_pairs_true.index.tolist())]
@@ -139,6 +141,8 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
         # calculate positive negative ratio
         pn_ratio = round((labeled_set_temp['label'].shape[0] - labeled_set_temp['label'].sum()) / labeled_set_temp['label'].sum())
         print('Positve Negative Ratio: ' + str(pn_ratio))
+        if pn_ratio == 0:
+            pn_ratio = 1
 
         # process labeled set for deepmatcher
         labeled_set_temp.to_csv('labeled_set', index=False)
