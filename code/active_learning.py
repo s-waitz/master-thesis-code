@@ -6,7 +6,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator):
+def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -106,10 +106,17 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
         print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
 
         if data_augmentation:
-            # Select k pairs with lowest entropy for data augmentation
-            high_conf_pairs_true = predictions_true['entropy'].nsmallest(int(sampling_size/2))
-            high_conf_pairs_false = predictions_false['entropy'].nsmallest(int(sampling_size/2))
             
+            if da_threshold == 0:
+                # Select k pairs with lowest entropy for data augmentation
+                high_conf_pairs_true = predictions_true['entropy'].nsmallest(int(sampling_size/2))
+                high_conf_pairs_false = predictions_false['entropy'].nsmallest(int(sampling_size/2))
+            else:
+                # select pairs with high probability for data augmentation
+                high_conf_pairs_true = predictions[predictions['match_score']>=da_threshold]
+                # select pairs with low probability for data augmentation
+                high_conf_pairs_false = predictions[predictions['match_score']<=(100-da_threshold)]
+                
             # Use prediction as label
             data_augmentation_true = pool_data[pool_data['id'].isin(high_conf_pairs_true.index.tolist())]
             data_augmentation_true['label'] = 1
@@ -122,6 +129,7 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
                 labeled_set_temp = labeled_set_raw
             else:
                 labeled_set_temp = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
+                
         else:
             labeled_set_temp = labeled_set_raw
 
