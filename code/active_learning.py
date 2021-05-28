@@ -104,6 +104,7 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
             labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_false.index.tolist())])
             
         print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
+        number_labeled_examples += low_conf_pairs_true.shape[0] + low_conf_pairs_false.shape[0]
 
         if data_augmentation:
             
@@ -188,7 +189,7 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
         f1_scores.append(round(fscore,3))
         precision_scores.append(round(prec,3))
         recall_scores.append(round(recall,3))
-        labeled_set_size.append(labeled_set_raw.shape[0])
+        labeled_set_size.append(number_labeled_examples)
 
     all_scores = pd.DataFrame(
         {'labeled set size': labeled_set_size,
