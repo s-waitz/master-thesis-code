@@ -135,7 +135,7 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
     return results_al
 
 
-def run_pl(dataset, save_results_file, train_size=None, ignore_columns=('source_id','target_id'), file_path='', attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=16, path_pl_model='pl_model.pth', embeddings_cache_path='~/.vector_cache'):
+def run_pl(dataset, save_results_file, train_size=None, ignore_columns=('source_id','target_id'), file_path='', attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, path_pl_model='pl_model.pth', embeddings_cache_path='~/.vector_cache'):
 
     # Load datasets
 
