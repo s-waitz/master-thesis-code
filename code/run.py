@@ -10,6 +10,13 @@ from sklearn.metrics import precision_recall_fscore_support
 
 def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
     
+    if transfer_learning_dataset != None:
+        init_method='Transfer Learning'
+        init='tl'
+    else:
+        init_method = 'Random Sample ' + str(init_random_sample)
+        init = 'rs' + str(init_random_sample)
+
     # filename results
     day = date.today().strftime('%Y%m%d')
     x=1
@@ -40,8 +47,6 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
     
     # Initialize model
     if transfer_learning_dataset != None:
-        init_method='Transfer Learning'
-        init='tl'
 
         # calculate positive negative ratio
         train_data_tl = pd.read_csv(file_path + transfer_learning_dataset + '_train')
@@ -74,8 +79,6 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
             pos_neg_ratio=pn_ratio_tl)
 
     else:
-        init_method = 'Random Sample ' + str(init_random_sample)
-        init = 'rs' + str(init_random_sample)
         random_train_data = train_data.sample(n=init_random_sample, weights=None, axis=None)
         random_train_data.to_csv('random_train_set', index=False)
         random_validation_data = validation_data.sample(n=int(init_random_sample/3), weights=None, axis=None)

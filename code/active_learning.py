@@ -50,6 +50,9 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
     precision_scores = []
     recall_scores = []
     labeled_set_size = []
+    pos_neg_ratios = []
+
+    number_labeled_examples = 0
 
     # (1)
     for i in range(1,num_runs+1):
@@ -190,12 +193,14 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
         precision_scores.append(round(prec,3))
         recall_scores.append(round(recall,3))
         labeled_set_size.append(number_labeled_examples)
+        pos_neg_ratios.append(pn_ratio)
 
     all_scores = pd.DataFrame(
         {'labeled set size': labeled_set_size,
         'f1': f1_scores,
         'precision': precision_scores,
-        'recall': recall_scores
+        'recall': recall_scores,
+        'pos_neg_ratio': pos_neg_ratios
         })
 
     return all_scores
