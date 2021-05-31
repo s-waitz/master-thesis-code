@@ -6,13 +6,13 @@ from sklearn.metrics import precision_recall_fscore_support
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator):
+def active_learning(train_data, validation_data, test_data, init_method, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator):
     """    
         Args:
         train_data (pd.DataFrame): ...
         validation_data (pd.DataFrame): ...
         test_data (pd.DataFrame): ...
-        num_runs (int): ...
+        al_iterations (int): ...
         sampling_size (int): ...
         model (dm.MatchingModel): ...
         file_path (str, optional): ... Defaults to ''.
@@ -55,7 +55,7 @@ def active_learning(train_data, validation_data, test_data, init_method, num_run
     number_labeled_examples = 0
 
     # (1)
-    for i in range(1,num_runs+1):
+    for i in range(1,al_iterations+1):
 
 
         print("AL run: " + str(i))

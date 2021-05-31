@@ -2,13 +2,14 @@ from active_learning import *
 
 import deepmatcher as dm
 import pandas as pd
+import numpy as np
 import time
 from datetime import date
 import os.path
 
 from sklearn.metrics import precision_recall_fscore_support
 
-def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
+def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
     
     if transfer_learning_dataset != None:
         init_method='Transfer Learning'
@@ -24,7 +25,7 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
     while True:
         
         experiment_name = 'al_{}_runs{}_ss{}_init_{}_da_{}_hc_{}_thresh_{}_model_{}_epochs{}_batch{}_lrdecay{}_{}_{}'.format(
-            dataset,num_runs,sampling_size,init,data_augmentation,high_conf_to_ls,da_threshold,attr_summarizer,epochs,batch_size,lr_decay,day,x)
+            dataset,al_iterations,sampling_size,init,data_augmentation,high_conf_to_ls,da_threshold,attr_summarizer,epochs,batch_size,lr_decay,day,x)
 
         save_results_file = save_results_path + experiment_name + '_results.csv'
         
@@ -38,104 +39,139 @@ def run_al(dataset, num_runs, sampling_size, save_results_path, transfer_learnin
         else:
             break
     
-    # Load datasets
-    train_data = pd.read_csv(file_path + dataset + '_train')
-    validation_data = pd.read_csv(file_path + dataset + '_validation')
-    test_data = pd.read_csv(file_path + dataset + '_test')
+    for run in range(1,num_runs+1):
 
-    model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
-    
-    # Initialize model
-    if transfer_learning_dataset != None:
+        # Load datasets
+        train_data = pd.read_csv(file_path + dataset + '_train')
+        validation_data = pd.read_csv(file_path + dataset + '_validation')
+        test_data = pd.read_csv(file_path + dataset + '_test')
 
-        # calculate positive negative ratio
-        train_data_tl = pd.read_csv(file_path + transfer_learning_dataset + '_train')
-        pn_ratio_tl = round((train_data_tl['label'].shape[0] - train_data_tl['label'].sum()) / train_data_tl['label'].sum())
-        if pn_ratio_tl == 0:
-            pn_ratio_tl = 1
+        model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
         
-        print('Positve Negative Ratio TL: ' + str(pn_ratio_tl))
-        
-        train_tl, validation_tl, test_tl = dm.data.process(
-            path=file_path,
-            train=transfer_learning_dataset + '_train',
-            validation=transfer_learning_dataset + '_validation',
-            test=transfer_learning_dataset + '_test',
-            ignore_columns=ignore_columns,
-            left_prefix='left_',
-            right_prefix='right_',
-            label_attr='label',
-            id_attr='id',
-            cache=False,
-            embeddings=embeddings,
-            embeddings_cache_path=embeddings_cache_path)
+        # Initialize model
+        if transfer_learning_dataset != None:
 
-        model.run_train(
-            train_tl,
-            validation_tl,
-            epochs=epochs,
-            batch_size=batch_size,
-            best_save_path=path_tl_model,
-            pos_neg_ratio=pn_ratio_tl)
+            # calculate positive negative ratio
+            train_data_tl = pd.read_csv(file_path + transfer_learning_dataset + '_train')
+            pn_ratio_tl = round((train_data_tl['label'].shape[0] - train_data_tl['label'].sum()) / train_data_tl['label'].sum())
+            if pn_ratio_tl == 0:
+                pn_ratio_tl = 1
+            
+            print('Positve Negative Ratio TL: ' + str(pn_ratio_tl))
+            
+            train_tl, validation_tl, test_tl = dm.data.process(
+                path=file_path,
+                train=transfer_learning_dataset + '_train',
+                validation=transfer_learning_dataset + '_validation',
+                test=transfer_learning_dataset + '_test',
+                ignore_columns=ignore_columns,
+                left_prefix='left_',
+                right_prefix='right_',
+                label_attr='label',
+                id_attr='id',
+                cache=False,
+                embeddings=embeddings,
+                embeddings_cache_path=embeddings_cache_path)
 
-    else:
-        random_train_data = train_data.sample(n=init_random_sample, weights=None, axis=None)
-        random_train_data.to_csv('random_train_set', index=False)
-        random_validation_data = validation_data.sample(n=int(init_random_sample/3), weights=None, axis=None)
-        random_validation_data.to_csv('random_validation_set', index=False)
+            model.run_train(
+                train_tl,
+                validation_tl,
+                epochs=epochs,
+                batch_size=batch_size,
+                best_save_path=path_tl_model,
+                pos_neg_ratio=pn_ratio_tl)
 
-        # calculate positive negative ratio
-        pn_ratio_init = round((random_train_data['label'].shape[0] - random_train_data['label'].sum()) / random_train_data['label'].sum())
-        if pn_ratio_init == 0:
-            pn_ratio_init = 1
-        
-        print('Positve Negative Ratio TL: ' + str(pn_ratio_init))
+        else:
+            random_train_data = train_data.sample(n=init_random_sample, weights=None, axis=None)
+            random_train_data.to_csv('random_train_set', index=False)
+            random_validation_data = validation_data.sample(n=int(init_random_sample/3), weights=None, axis=None)
+            random_validation_data.to_csv('random_validation_set', index=False)
 
-        random_train_set, random_validation_set, _ = dm.data.process(
-            path='',
-            train='random_train_set',
-            validation='random_validation_set',
-            test=file_path + dataset + '_train',
-            ignore_columns=ignore_columns,
-            left_prefix='left_',
-            right_prefix='right_',
-            label_attr='label',
-            id_attr='id',
-            cache=None,
-            embeddings=embeddings,
-            embeddings_cache_path=embeddings_cache_path)
+            # calculate positive negative ratio
+            pn_ratio_init = round((random_train_data['label'].shape[0] - random_train_data['label'].sum()) / random_train_data['label'].sum())
+            if pn_ratio_init == 0:
+                pn_ratio_init = 1
+            
+            print('Positve Negative Ratio TL: ' + str(pn_ratio_init))
 
-        model.run_train(
-            random_train_set,
-            random_validation_set,
-            epochs=epochs,
-            batch_size=batch_size,
-            best_save_path='init_model.pth',
-            pos_neg_ratio=pn_ratio_init)
+            random_train_set, random_validation_set, _ = dm.data.process(
+                path='',
+                train='random_train_set',
+                validation='random_validation_set',
+                test=file_path + dataset + '_train',
+                ignore_columns=ignore_columns,
+                left_prefix='left_',
+                right_prefix='right_',
+                label_attr='label',
+                id_attr='id',
+                cache=None,
+                embeddings=embeddings,
+                embeddings_cache_path=embeddings_cache_path)
 
-    results_al = active_learning(train_data, validation_data, test_data, init_method,
-        num_runs, sampling_size, model, ignore_columns, file_path, data_augmentation,
-        high_conf_to_ls, da_threshold, epochs, batch_size, lr_decay, embeddings, path_al_model,
-        attr_summarizer, attr_comparator)
+            model.run_train(
+                random_train_set,
+                random_validation_set,
+                epochs=epochs,
+                batch_size=batch_size,
+                best_save_path='init_model.pth',
+                pos_neg_ratio=pn_ratio_init)
 
-    # build final results dataframe and save results
-    results_al['Dataset']=dataset
-    results_al['Initialization Method']=init_method
-    results_al['Transfer Learning Dataset']=transfer_learning_dataset
-    results_al['AL Runs']=num_runs
-    results_al['Sampling Size']=sampling_size
-    results_al['Attribute Summarizer']=attr_summarizer
-    results_al['Attribute Comparator']=attr_comparator
-    results_al['Embeddings']=embeddings
-    results_al['Epochs']=epochs
-    results_al['Batch Size']=batch_size
-    results_al['LR Decay']=lr_decay
-    results_al['Data Augmentation']=data_augmentation
-    results_al['High.Conf.LS']=high_conf_to_ls
-    results_al['DA Threshold']=da_threshold
-    results_al.to_csv(save_results_file, index=False)
+        results_al = active_learning(train_data, validation_data, test_data, init_method,
+            al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation,
+            high_conf_to_ls, da_threshold, epochs, batch_size, lr_decay, embeddings, path_al_model,
+            attr_summarizer, attr_comparator)
 
-    return results_al
+        if run == 1:
+            results = pd.DataFrame()
+            # build final results dataframe and save results
+            results['labeled set size']=results_al['labeled set size']
+            results['Dataset']=dataset
+            results['Initialization Method']=init_method
+            results['Transfer Learning Dataset']=transfer_learning_dataset
+            results['AL Runs']=al_iterations
+            results['Sampling Size']=sampling_size
+            results['Attribute Summarizer']=attr_summarizer
+            results['Attribute Comparator']=attr_comparator
+            results['Embeddings']=embeddings
+            results['Epochs']=epochs
+            results['Batch Size']=batch_size
+            results['LR Decay']=lr_decay
+            results['Data Augmentation']=data_augmentation
+            results['High.Conf.LS']=high_conf_to_ls
+            results['DA Threshold']=da_threshold
+
+        results['Run ' + str(run) + ': f1'] = results_al['f1']
+        results['Run ' + str(run) + ': precision'] = results_al['precision']
+        results['Run ' + str(run) + ': recall'] = results_al['recall']
+        results['Run ' + str(run) + ': pos_neg_ratio'] = results_al['pos_neg_ratio']
+
+        if run > 1:
+            all_f1 = np.vstack((all_f1,results_al['f1']))
+            all_precision = np.vstack((all_precision,results_al['precision']))
+            all_recall = np.vstack((all_recall,results_al['recall']))
+        else:
+            all_f1 = results_al['f1']
+            all_precision = results_al['precision']
+            all_recall = results_al['recall']
+
+    # calculate mean and standard deviation
+    mean_f1 = np.mean(all_f1,axis=0)
+    std_f1 = np.std(all_f1,axis=0)
+    mean_precision = np.mean(all_precision,axis=0)
+    std_precision = np.std(all_precision,axis=0)
+    mean_recall = np.mean(all_recall,axis=0)
+    std_recall = np.std(all_recall,axis=0)
+
+    results['F1 Mean'] = round(mean_f1,3)
+    results['F1 Std'] = round(std_f1,3)
+    results['Precision Mean'] = round(mean_precision,3)
+    results['Precision Std'] = round(std_precision,3)
+    results['Recall Mean'] = round(mean_recall,3)
+    results['Recall Std'] = round(std_recall,3)
+
+    results.to_csv(save_results_file, index=False)
+
+    return results
 
 
 def run_pl(dataset, save_results_file, train_size=None, ignore_columns=('source_id','target_id'), file_path='', attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, path_pl_model='pl_model.pth', embeddings_cache_path='~/.vector_cache'):
