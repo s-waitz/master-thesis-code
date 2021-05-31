@@ -3,6 +3,7 @@ import numpy as np
 import copy
 
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.metrics import confusion_matrix
 
 import deepmatcher as dm
 
@@ -51,6 +52,7 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
     recall_scores = []
     labeled_set_size = []
     pos_neg_ratios = []
+    data_augmentation_labels = []
 
     number_labeled_examples = 0
 
@@ -135,7 +137,12 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
                 labeled_set_temp = labeled_set_raw
             else:
                 labeled_set_temp = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
-                
+            
+            # Calculate noisy in high confidence examples
+            data_augmentation = pd.concat([data_augmentation_true,data_augmentation_false])
+            tn, fp, fn, tp = confusion_matrix(data_augmentation['label_oracle'],data_augmentation['label']).ravel()
+            data_augmentation_labels.append([tn, fp, fn, tp])
+        
         else:
             labeled_set_temp = labeled_set_raw
 
@@ -194,13 +201,15 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
         recall_scores.append(round(recall,3))
         labeled_set_size.append(number_labeled_examples)
         pos_neg_ratios.append(pn_ratio)
+        
 
     all_scores = pd.DataFrame(
         {'labeled set size': labeled_set_size,
         'f1': f1_scores,
         'precision': precision_scores,
         'recall': recall_scores,
-        'pos_neg_ratio': pos_neg_ratios
+        'pos_neg_ratio': pos_neg_ratios,
+        'da labels': data_augmentation_labels
         })
 
     return all_scores

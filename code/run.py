@@ -144,6 +144,7 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, t
         results['Run ' + str(run) + ': precision'] = results_al['precision']
         results['Run ' + str(run) + ': recall'] = results_al['recall']
         results['Run ' + str(run) + ': pos_neg_ratio'] = results_al['pos_neg_ratio']
+        results['Run ' + str(run) + ': da labels'] = results_al['da labels']
 
         if run > 1:
             all_f1 = np.vstack((all_f1,results_al['f1']))
