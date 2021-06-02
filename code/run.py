@@ -41,6 +41,8 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, t
     
     for run in range(1,num_runs+1):
 
+        print("Run: " + str(run))
+
         # Load datasets
         train_data = pd.read_csv(file_path + dataset + '_train')
         validation_data = pd.read_csv(file_path + dataset + '_validation')
@@ -144,7 +146,8 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, t
         results['Run ' + str(run) + ': precision'] = results_al['precision']
         results['Run ' + str(run) + ': recall'] = results_al['recall']
         results['Run ' + str(run) + ': pos_neg_ratio'] = results_al['pos_neg_ratio']
-        results['Run ' + str(run) + ': da labels'] = results_al['da labels']
+        if data_augmentation:
+            results['Run ' + str(run) + ': da labels'] = results_al['da labels']
 
         if run > 1:
             all_f1 = np.vstack((all_f1,results_al['f1']))
@@ -163,12 +166,12 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, t
     mean_recall = np.mean(all_recall,axis=0)
     std_recall = np.std(all_recall,axis=0)
 
-    results['F1 Mean'] = round(mean_f1,3)
-    results['F1 Std'] = round(std_f1,3)
-    results['Precision Mean'] = round(mean_precision,3)
-    results['Precision Std'] = round(std_precision,3)
-    results['Recall Mean'] = round(mean_recall,3)
-    results['Recall Std'] = round(std_recall,3)
+    results['F1 Mean'] = np.round(mean_f1,3)
+    results['F1 Std'] = np.round(std_f1,3)
+    results['Precision Mean'] = np.round(mean_precision,3)
+    results['Precision Std'] = np.round(std_precision,3)
+    results['Recall Mean'] = np.round(mean_recall,3)
+    results['Recall Std'] = np.round(std_recall,3)
 
     results.to_csv(save_results_file, index=False)
 

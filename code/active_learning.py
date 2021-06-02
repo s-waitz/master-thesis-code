@@ -25,7 +25,11 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
     Returns:
         pd.DataFrame: Dataframe containing results for every active learning run.
     """
-
+    def round_int(num):
+        if num == float("inf") or num == float("-inf"):
+            return 0
+        return int(round(num))
+        
     labeled_set_raw = None
 
     oracle = train_data.copy()
@@ -139,8 +143,9 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
                 labeled_set_temp = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
             
             # Calculate noisy in high confidence examples
-            data_augmentation = pd.concat([data_augmentation_true,data_augmentation_false])
-            tn, fp, fn, tp = confusion_matrix(data_augmentation['label_oracle'],data_augmentation['label']).ravel()
+            da_examples = pd.concat([data_augmentation_true,data_augmentation_false])
+            da_examples = da_examples.merge(oracle[['id','label']],how='left',on='id',suffixes=('', '_oracle'))
+            tn, fp, fn, tp = confusion_matrix(da_examples['label_oracle'],da_examples['label'],labels=[0,1]).ravel()
             data_augmentation_labels.append([tn, fp, fn, tp])
         
         else:
@@ -150,7 +155,7 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
         pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
         
         # calculate positive negative ratio
-        pn_ratio = round((labeled_set_temp['label'].shape[0] - labeled_set_temp['label'].sum()) / labeled_set_temp['label'].sum())
+        pn_ratio = round_int((labeled_set_temp['label'].shape[0] - labeled_set_temp['label'].sum()) / labeled_set_temp['label'].sum())
         print('Positve Negative Ratio: ' + str(pn_ratio))
         if pn_ratio == 0:
             pn_ratio = 1
@@ -208,9 +213,13 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
         'f1': f1_scores,
         'precision': precision_scores,
         'recall': recall_scores,
-        'pos_neg_ratio': pos_neg_ratios,
-        'da labels': data_augmentation_labels
+        'pos_neg_ratio': pos_neg_ratios
         })
+ 
+    if data_augmentation:
+        all_scores['da labels']=data_augmentation_labels
 
     return all_scores
         # Go to (1)
+
+    
