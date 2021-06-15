@@ -145,7 +145,13 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
             # Calculate noisy in high confidence examples
             da_examples = pd.concat([data_augmentation_true,data_augmentation_false])
             da_examples = da_examples.merge(oracle[['id','label']],how='left',on='id',suffixes=('', '_oracle'))
-            tn, fp, fn, tp = confusion_matrix(da_examples['label_oracle'],da_examples['label'],labels=[0,1]).ravel()
+            if da_examples.shape[0] > 0:
+                tn, fp, fn, tp = confusion_matrix(da_examples['label_oracle'],da_examples['label'],labels=[0,1]).ravel()
+            else:
+                tn = 0
+                fp = 0
+                fn = 0
+                tp = 0
             data_augmentation_labels.append([tn, fp, fn, tp])
         
         else:
