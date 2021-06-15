@@ -5,6 +5,7 @@ from datetime import date
 import os.path
 import shlex
 import subprocess
+import numpy as np
 
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
@@ -98,7 +99,54 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
                                            base_data_path, labeled_set_path,
                                            input_path, output_path,
                                            batch_size, epochs)
-        # todo all results
+        if run == 1:
+            results = pd.DataFrame()
+            # build final results dataframe and save results
+            results['labeled set size']=results_al['labeled set size']
+            results['Task']=task
+            results['Initialization Method']=init_method
+            results['Transfer Learning Dataset']=transfer_learning_dataset
+            results['AL Runs']=al_iterations
+            results['Sampling Size']=sampling_size
+            results['Epochs']=epochs
+            results['Batch Size']=batch_size
+            results['Data Augmentation']=data_augmentation
+            results['High.Conf.LS']=high_conf_to_ls
+            results['DA Threshold']=da_threshold
+
+        results['Run ' + str(run) + ': f1'] = results_al['f1']
+        results['Run ' + str(run) + ': precision'] = results_al['precision']
+        results['Run ' + str(run) + ': recall'] = results_al['recall']
+        #if data_augmentation:
+        #    results['Run ' + str(run) + ': da labels'] = results_al['da labels']
+
+        if run > 1:
+            all_f1 = np.vstack((all_f1,results_al['f1']))
+            all_precision = np.vstack((all_precision,results_al['precision']))
+            all_recall = np.vstack((all_recall,results_al['recall']))
+        else:
+            all_f1 = results_al['f1']
+            all_precision = results_al['precision']
+            all_recall = results_al['recall']
+
+    # calculate mean and standard deviation
+    mean_f1 = np.mean(all_f1,axis=0)
+    std_f1 = np.std(all_f1,axis=0)
+    mean_precision = np.mean(all_precision,axis=0)
+    std_precision = np.std(all_precision,axis=0)
+    mean_recall = np.mean(all_recall,axis=0)
+    std_recall = np.std(all_recall,axis=0)
+
+    results['F1 Mean'] = np.round(mean_f1,3)
+    results['F1 Std'] = np.round(std_f1,3)
+    results['Precision Mean'] = np.round(mean_precision,3)
+    results['Precision Std'] = np.round(std_precision,3)
+    results['Recall Mean'] = np.round(mean_recall,3)
+    results['Recall Std'] = np.round(std_recall,3)
+
+    results.to_csv(save_results_file, index=False)
+
+    return results
 
 
 
