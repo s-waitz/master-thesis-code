@@ -47,7 +47,6 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --lm distilbert \
       --use_gpu \
       --fp16 \
-      --balance \
       --checkpoint_path checkpoints/""" % (task, input_path+task+'_unlabeled_pool.jsonl', output_path+task+'_prediction.jsonl')
 
     #os.system(cmd)
@@ -113,6 +112,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --finetuning \
       --lm distilbert \
       --fp16 \
+      --balance \
       --save_model""" % (task, batch_size, epochs)
 
     #os.system(cmd)

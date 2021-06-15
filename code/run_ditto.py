@@ -99,3 +99,120 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
                                            input_path, output_path,
                                            batch_size, epochs)
         # todo all results
+
+
+
+def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', batch_size=32, epochs=2):
+    
+    # Delete all models
+    cmd = 'rm *.pt'
+    os.system(cmd)
+
+    model = str(task) + '.pt'
+
+    if train_size:
+        # select samples
+        train_data = pd.read_csv(base_data_path + task + '_train').sample(n=train_size, weights=None, axis=None)
+        validation_data = pd.read_csv(base_data_path + task + '_validation').sample(n=int(train_size/3), weights=None, axis=None)
+        test_data = pd.read_csv(base_data_path + task + '_test').sample(n=int(train_size/3), weights=None, axis=None)
+    
+    else:
+        train_data = pd.read_csv(base_data_path + task + '_train')
+        validation_data = pd.read_csv(base_data_path + task + '_validation')
+        test_data = pd.read_csv(base_data_path + task + '_test')
+ 
+    to_ditto_format(train_data, ditto_data_path+task+'_train.txt')
+    to_ditto_format(validation_data, ditto_data_path+task+'_validation.txt')
+    to_ditto_format(test_data, ditto_data_path+task+'_test.txt')
+
+    # Train model
+
+    print('Train model ...')
+
+    cmd = 'CUDA_VISIBLE_DEVICES=0'
+    os.system(cmd)
+
+    cmd = """python train_ditto.py \
+        --task %s \
+        --batch_size %d \
+        --max_len 256 \
+        --lr 3e-5 \
+        --n_epochs %d \
+        --finetuning \
+        --lm distilbert \
+        --fp16 \
+        --balance \
+        --save_model""" % (task, batch_size, epochs)
+
+    #os.system(cmd)
+    # invoke process
+    process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
+
+    # Poll process.stdout to show stdout live
+    while True:
+        output = process.stdout.readline()
+        if process.poll() is not None:
+            break
+        if output:
+            print(output.strip())
+    rc = process.poll()
+
+    # Delete all predictions
+    cmd = 'rm %s' % (output_path+task+'_test_prediction.jsonl')
+    os.system(cmd)
+
+    # Pick a checkpoint, rename it
+    cmd = 'mv *_dev.pt checkpoints/%s' % (model)
+    os.system(cmd)
+
+    # run prediction on test set
+
+    print('Run prediction on test set ...')
+
+    cmd = 'CUDA_VISIBLE_DEVICES=0'
+    os.system(cmd)
+
+    cmd = """python matcher.py \
+      --task %s \
+      --input_path %s \
+      --output_path %s \
+      --lm distilbert \
+      --use_gpu \
+      --fp16 \
+      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl', output_path+task+'_test_prediction.jsonl')
+
+    #os.system(cmd)
+    # invoke process
+    process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
+
+    # Poll process.stdout to show stdout live
+    while True:
+      output = process.stdout.readline()
+      if process.poll() is not None:
+        break
+      if output:
+        print(output.strip())
+    rc = process.poll()
+
+    test_predictions = pd.read_json(output_path+task+'_test_prediction.jsonl', lines=True)
+
+    # calculate scores
+    prec, recall, fscore, _ = precision_recall_fscore_support(
+            test_data['label'],
+            test_predictions['match'],
+            average='binary')
+    
+    try:
+        results_pl = pd.read_csv(save_results_file)
+    except:
+        results_pl = pd.DataFrame(columns = ['Task','Method','Date','Train Size', 'F1',
+                                        'Precision','Recall','Epochs',
+                                        'Batch Size'])
+
+    results_pl = results_pl.append({'Task':task,'Method':'Passive Learing','Date':date.today().strftime("%d.%m.%Y"),
+                   'Train Size':train_size,'F1':round(fscore,3),'Precision':round(prec,3),'Recall':round(recall,3),
+                   'Epochs':epochs,'Batch Size':batch_size},ignore_index=True)
+                   
+    results_pl.to_csv(save_results_file, index=False)
+
+    return results_pl
