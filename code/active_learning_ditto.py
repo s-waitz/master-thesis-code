@@ -201,5 +201,6 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     'precision': precision_scores,
     'recall': recall_scores
     })
+  print(all_scores)
 
   return all_scores

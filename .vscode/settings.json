@@ -1,10 +1,10 @@
 {
     "jupyter.jupyterServerType": "local",
-    "python.pythonPath": "C:\\Users\\steph\\Anaconda3\\python.exe",
     "python.autoComplete.extraPaths": [
         "./code"
     ],
     "python.analysis.extraPaths": [
         "./code"
-    ]
+    ],
+    "python.pythonPath": "c:\\Anaconda3\\envs\\python38\\python.exe"
 }

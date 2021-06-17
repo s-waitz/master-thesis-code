@@ -172,6 +172,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     to_ditto_format(train_data, ditto_data_path+task+'_train.txt')
     to_ditto_format(validation_data, ditto_data_path+task+'_validation.txt')
     to_ditto_format(test_data, ditto_data_path+task+'_test.txt')
+    to_jsonl(test_data, input_path+task+'_test.jsonl')
 
     # Train model
 

@@ -26,7 +26,12 @@ def to_ditto_format(df_input, output_file):
   file.close()
 
 def to_jsonl(input_file, output_file):
-  input_dict = pd.read_csv(input_file).to_dict('records')
+  
+  if isinstance(input_file, pd.DataFrame):
+    input_dict = input_file.to_dict('records')
+  else:
+    input_dict = pd.read_csv(input_file).to_dict('records')
+  
   with open(output_file, 'w') as outfile:
     for row in input_dict:
       left_dict = {}
