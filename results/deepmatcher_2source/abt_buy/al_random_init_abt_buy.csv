@@ -1,51 +1,51 @@
-labeled set size ,Dataset ,Initialization Method ,Transfer Learning Dataset ,AL Runs ,Sampling Size ,Attribute Summarizer ,Attribute Comparator ,Embeddings ,Epochs ,Batch Size ,LR Decay ,Data Augmentation ,High.Conf.LS ,DA Threshold ,Run 1: f1 ,Run 1: precision ,Run 1: recall ,Run 1: pos_neg_ratio ,Run 2: f1 ,Run 2: precision ,Run 2: recall ,Run 2: pos_neg_ratio ,Run 3: f1 ,Run 3: precision ,Run 3: recall ,Run 3: pos_neg_ratio
-20 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.198 ,0.123 ,0.505 ,6 ,0.266 ,0.154 ,1.0 ,9 ,0.266 ,0.154 ,1.0 ,9
-40 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.287 ,0.178 ,0.75 ,3 ,0.268 ,0.155 ,0.995 ,14 ,0.271 ,0.158 ,0.964 ,14
-60 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.287 ,0.171 ,0.886 ,5 ,0.266 ,0.154 ,1.0 ,24 ,0.273 ,0.161 ,0.9 ,7
-80 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.282 ,0.17 ,0.823 ,6 ,0.272 ,0.158 ,0.995 ,14 ,0.266 ,0.154 ,0.995 ,7
-100 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.279 ,0.166 ,0.864 ,7 ,0.273 ,0.158 ,0.995 ,15 ,0.282 ,0.165 ,0.945 ,7
-120 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.282 ,0.181 ,0.641 ,7 ,0.272 ,0.158 ,0.973 ,10 ,0.276 ,0.165 ,0.836 ,9
-140 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.265 ,0.175 ,0.55 ,7 ,0.271 ,0.157 ,0.982 ,12 ,0.278 ,0.165 ,0.886 ,9
-160 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.299 ,0.181 ,0.864 ,7 ,0.271 ,0.158 ,0.964 ,11 ,0.288 ,0.172 ,0.882 ,8
-180 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.274 ,0.185 ,0.532 ,7 ,0.287 ,0.176 ,0.777 ,11 ,0.283 ,0.167 ,0.936 ,6
-200 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.295 ,0.177 ,0.886 ,7 ,0.295 ,0.184 ,0.745 ,11 ,0.269 ,0.161 ,0.823 ,6
-220 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.283 ,0.169 ,0.877 ,7 ,0.304 ,0.194 ,0.7 ,10 ,0.315 ,0.201 ,0.727 ,6
-240 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.307 ,0.195 ,0.727 ,8 ,0.274 ,0.162 ,0.891 ,10 ,0.28 ,0.204 ,0.445 ,5
-260 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.275 ,0.181 ,0.573 ,8 ,0.312 ,0.202 ,0.682 ,9 ,0.302 ,0.194 ,0.677 ,5
-280 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.317 ,0.2 ,0.759 ,7 ,0.269 ,0.183 ,0.509 ,9 ,0.31 ,0.224 ,0.505 ,5
-300 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.348 ,0.23 ,0.709 ,6 ,0.286 ,0.176 ,0.773 ,9 ,0.326 ,0.234 ,0.541 ,5
-320 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.298 ,0.204 ,0.555 ,6 ,0.282 ,0.176 ,0.709 ,8 ,0.256 ,0.196 ,0.368 ,5
-340 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.346 ,0.248 ,0.573 ,6 ,0.309 ,0.197 ,0.718 ,8 ,0.309 ,0.225 ,0.491 ,5
-360 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.348 ,0.237 ,0.655 ,6 ,0.304 ,0.188 ,0.795 ,8 ,0.316 ,0.234 ,0.486 ,5
-380 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.366 ,0.262 ,0.609 ,6 ,0.322 ,0.209 ,0.7 ,8 ,0.32 ,0.232 ,0.514 ,5
-400 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.313 ,0.241 ,0.445 ,6 ,0.329 ,0.219 ,0.664 ,9 ,0.4 ,0.278 ,0.714 ,5
-420 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.366 ,0.245 ,0.723 ,6 ,0.321 ,0.205 ,0.745 ,9 ,0.332 ,0.236 ,0.559 ,5
-440 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.329 ,0.212 ,0.741 ,5 ,0.298 ,0.213 ,0.495 ,8 ,0.372 ,0.276 ,0.573 ,5
-460 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.33 ,0.211 ,0.759 ,6 ,0.324 ,0.233 ,0.527 ,8 ,0.34 ,0.263 ,0.482 ,5
-480 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.341 ,0.245 ,0.559 ,5 ,0.351 ,0.241 ,0.65 ,7 ,0.348 ,0.291 ,0.432 ,5
-500 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.309 ,0.217 ,0.532 ,5 ,0.345 ,0.232 ,0.673 ,7 ,0.331 ,0.239 ,0.536 ,5
-520 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.299 ,0.234 ,0.414 ,5 ,0.344 ,0.245 ,0.577 ,7 ,0.306 ,0.243 ,0.414 ,5
-540 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.323 ,0.239 ,0.5 ,5 ,0.326 ,0.252 ,0.464 ,7 ,0.419 ,0.389 ,0.455 ,5
-560 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.347 ,0.25 ,0.568 ,5 ,0.365 ,0.247 ,0.7 ,7 ,0.402 ,0.285 ,0.677 ,5
-580 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.34 ,0.258 ,0.5 ,5 ,0.328 ,0.276 ,0.405 ,6 ,0.39 ,0.33 ,0.477 ,5
-600 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.371 ,0.301 ,0.482 ,5 ,0.316 ,0.239 ,0.464 ,6 ,0.384 ,0.355 ,0.418 ,4
-620 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.432 ,0.339 ,0.595 ,5 ,0.315 ,0.256 ,0.409 ,7 ,0.342 ,0.307 ,0.386 ,4
-640 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.343 ,0.261 ,0.5 ,5 ,0.35 ,0.311 ,0.4 ,6 ,0.366 ,0.3 ,0.468 ,4
-660 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.376 ,0.283 ,0.559 ,5 ,0.391 ,0.272 ,0.691 ,6 ,0.44 ,0.346 ,0.605 ,4
-680 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.398 ,0.31 ,0.555 ,5 ,0.342 ,0.28 ,0.441 ,6 ,0.449 ,0.379 ,0.55 ,4
-700 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.418 ,0.317 ,0.614 ,5 ,0.377 ,0.265 ,0.655 ,6 ,0.47 ,0.408 ,0.555 ,4
-720 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.423 ,0.369 ,0.495 ,5 ,0.38 ,0.292 ,0.545 ,6 ,0.452 ,0.406 ,0.509 ,4
-740 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.392 ,0.305 ,0.545 ,5 ,0.392 ,0.281 ,0.65 ,6 ,0.426 ,0.336 ,0.582 ,4
-760 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.385 ,0.323 ,0.477 ,5 ,0.424 ,0.366 ,0.505 ,6 ,0.439 ,0.381 ,0.518 ,4
-780 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.405 ,0.402 ,0.409 ,4 ,0.36 ,0.311 ,0.427 ,6 ,0.408 ,0.39 ,0.427 ,4
-800 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.372 ,0.305 ,0.477 ,4 ,0.324 ,0.305 ,0.345 ,6 ,0.43 ,0.364 ,0.527 ,4
-820 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.438 ,0.37 ,0.536 ,4 ,0.39 ,0.344 ,0.45 ,6 ,0.472 ,0.433 ,0.518 ,4
-840 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.438 ,0.336 ,0.632 ,4 ,0.303 ,0.289 ,0.318 ,6 ,0.454 ,0.44 ,0.468 ,4
-860 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.4 ,0.369 ,0.436 ,4 ,0.404 ,0.304 ,0.605 ,5 ,0.408 ,0.319 ,0.568 ,4
-880 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.39 ,0.314 ,0.514 ,4 ,0.353 ,0.276 ,0.491 ,6 ,0.456 ,0.394 ,0.541 ,4
-900 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.419 ,0.299 ,0.7 ,4 ,0.365 ,0.322 ,0.423 ,6 ,0.455 ,0.418 ,0.5 ,4
-920 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.405 ,0.303 ,0.609 ,4 ,0.412 ,0.304 ,0.641 ,5 ,0.462 ,0.345 ,0.7 ,4
-940 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.447 ,0.358 ,0.595 ,4 ,0.401 ,0.33 ,0.509 ,6 ,0.503 ,0.446 ,0.577 ,4
-960 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.427 ,0.403 ,0.455 ,4 ,0.425 ,0.341 ,0.564 ,5 ,0.424 ,0.412 ,0.436 ,4
-980 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.447 ,0.432 ,0.464 ,4 ,0.437 ,0.355 ,0.568 ,5 ,0.463 ,0.468 ,0.459 ,4
-1000 ,abt_buy ,Random Sample 500 , ,50 ,20 ,hybrid ,abs-diff ,fasttext.en.bin ,20 ,20 ,0.8 ,False ,False ,0 ,0.5 ,0.455 ,0.555 ,4 ,0.454 ,0.385 ,0.555 ,5 ,0.451 ,0.402 ,0.514 ,4
+labeled set size,Dataset,Initialization Method,Transfer Learning Dataset,AL Runs,Sampling Size,Attribute Summarizer,Attribute Comparator,Embeddings,Epochs,Batch Size,LR Decay,Data Augmentation,High.Conf.LS,DA Threshold,Run 1: f1,Run 1: precision,Run 1: recall,Run 1: pos_neg_ratio,Run 2: f1,Run 2: precision,Run 2: recall,Run 2: pos_neg_ratio,Run 3: f1,Run 3: precision,Run 3: recall,Run 3: pos_neg_ratio,F1 Mean,F1 Std,Precision Mean,Precision Std,Recall Mean,Recall Std
+20,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.198,0.123,0.505,6,0.266,0.154,1.0,9,0.266,0.154,1.0,9,0.243,0.039,0.144,0.018,0.835,0.286
+40,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.287,0.178,0.75,3,0.268,0.155,0.995,14,0.271,0.158,0.964,14,0.275,0.01,0.164,0.013,0.903,0.133
+60,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.287,0.171,0.886,5,0.266,0.154,1.0,24,0.273,0.161,0.9,7,0.275,0.011,0.162,0.009,0.929,0.062
+80,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.282,0.17,0.823,6,0.272,0.158,0.995,14,0.266,0.154,0.995,7,0.273,0.008,0.161,0.008,0.938,0.099
+100,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.279,0.166,0.864,7,0.273,0.158,0.995,15,0.282,0.165,0.945,7,0.278,0.005,0.163,0.004,0.935,0.066
+120,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.282,0.181,0.641,7,0.272,0.158,0.973,10,0.276,0.165,0.836,9,0.277,0.005,0.168,0.012,0.817,0.167
+140,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.265,0.175,0.55,7,0.271,0.157,0.982,12,0.278,0.165,0.886,9,0.271,0.007,0.166,0.009,0.806,0.227
+160,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.299,0.181,0.864,7,0.271,0.158,0.964,11,0.288,0.172,0.882,8,0.286,0.014,0.17,0.012,0.903,0.053
+180,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.274,0.185,0.532,7,0.287,0.176,0.777,11,0.283,0.167,0.936,6,0.281,0.007,0.176,0.009,0.748,0.204
+200,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.295,0.177,0.886,7,0.295,0.184,0.745,11,0.269,0.161,0.823,6,0.286,0.015,0.174,0.012,0.818,0.071
+220,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.283,0.169,0.877,7,0.304,0.194,0.7,10,0.315,0.201,0.727,6,0.301,0.016,0.188,0.017,0.768,0.095
+240,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.307,0.195,0.727,8,0.274,0.162,0.891,10,0.28,0.204,0.445,5,0.287,0.018,0.187,0.022,0.688,0.226
+260,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.275,0.181,0.573,8,0.312,0.202,0.682,9,0.302,0.194,0.677,5,0.296,0.019,0.192,0.011,0.644,0.062
+280,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.317,0.2,0.759,7,0.269,0.183,0.509,9,0.31,0.224,0.505,5,0.299,0.026,0.202,0.021,0.591,0.146
+300,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.348,0.23,0.709,6,0.286,0.176,0.773,9,0.326,0.234,0.541,5,0.32,0.031,0.213,0.032,0.674,0.12
+320,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.298,0.204,0.555,6,0.282,0.176,0.709,8,0.256,0.196,0.368,5,0.279,0.021,0.192,0.014,0.544,0.171
+340,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.346,0.248,0.573,6,0.309,0.197,0.718,8,0.309,0.225,0.491,5,0.321,0.021,0.223,0.026,0.594,0.115
+360,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.348,0.237,0.655,6,0.304,0.188,0.795,8,0.316,0.234,0.486,5,0.323,0.023,0.22,0.027,0.645,0.155
+380,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.366,0.262,0.609,6,0.322,0.209,0.7,8,0.32,0.232,0.514,5,0.336,0.026,0.234,0.027,0.608,0.093
+400,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.313,0.241,0.445,6,0.329,0.219,0.664,9,0.4,0.278,0.714,5,0.347,0.046,0.246,0.03,0.608,0.143
+420,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.366,0.245,0.723,6,0.321,0.205,0.745,9,0.332,0.236,0.559,5,0.34,0.023,0.229,0.021,0.676,0.102
+440,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.329,0.212,0.741,5,0.298,0.213,0.495,8,0.372,0.276,0.573,5,0.333,0.037,0.234,0.037,0.603,0.126
+460,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.33,0.211,0.759,6,0.324,0.233,0.527,8,0.34,0.263,0.482,5,0.331,0.008,0.236,0.026,0.589,0.149
+480,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.341,0.245,0.559,5,0.351,0.241,0.65,7,0.348,0.291,0.432,5,0.347,0.005,0.259,0.028,0.547,0.109
+500,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.309,0.217,0.532,5,0.345,0.232,0.673,7,0.331,0.239,0.536,5,0.328,0.018,0.229,0.011,0.58,0.08
+520,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.299,0.234,0.414,5,0.344,0.245,0.577,7,0.306,0.243,0.414,5,0.316,0.024,0.241,0.006,0.468,0.094
+540,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.323,0.239,0.5,5,0.326,0.252,0.464,7,0.419,0.389,0.455,5,0.356,0.055,0.293,0.083,0.473,0.024
+560,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.347,0.25,0.568,5,0.365,0.247,0.7,7,0.402,0.285,0.677,5,0.371,0.028,0.261,0.021,0.648,0.071
+580,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.34,0.258,0.5,5,0.328,0.276,0.405,6,0.39,0.33,0.477,5,0.353,0.033,0.288,0.037,0.461,0.05
+600,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.371,0.301,0.482,5,0.316,0.239,0.464,6,0.384,0.355,0.418,4,0.357,0.036,0.298,0.058,0.455,0.033
+620,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.432,0.339,0.595,5,0.315,0.256,0.409,7,0.342,0.307,0.386,4,0.363,0.061,0.301,0.042,0.463,0.115
+640,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.343,0.261,0.5,5,0.35,0.311,0.4,6,0.366,0.3,0.468,4,0.353,0.012,0.291,0.026,0.456,0.051
+660,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.376,0.283,0.559,5,0.391,0.272,0.691,6,0.44,0.346,0.605,4,0.402,0.033,0.3,0.04,0.618,0.067
+680,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.398,0.31,0.555,5,0.342,0.28,0.441,6,0.449,0.379,0.55,4,0.396,0.054,0.323,0.051,0.515,0.064
+700,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.418,0.317,0.614,5,0.377,0.265,0.655,6,0.47,0.408,0.555,4,0.422,0.047,0.33,0.072,0.608,0.05
+720,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.423,0.369,0.495,5,0.38,0.292,0.545,6,0.452,0.406,0.509,4,0.418,0.036,0.356,0.058,0.516,0.026
+740,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.392,0.305,0.545,5,0.392,0.281,0.65,6,0.426,0.336,0.582,4,0.403,0.02,0.307,0.028,0.592,0.053
+760,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.385,0.323,0.477,5,0.424,0.366,0.505,6,0.439,0.381,0.518,4,0.416,0.028,0.357,0.03,0.5,0.021
+780,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.405,0.402,0.409,4,0.36,0.311,0.427,6,0.408,0.39,0.427,4,0.391,0.027,0.368,0.049,0.421,0.01
+800,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.372,0.305,0.477,4,0.324,0.305,0.345,6,0.43,0.364,0.527,4,0.375,0.053,0.325,0.034,0.45,0.094
+820,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.438,0.37,0.536,4,0.39,0.344,0.45,6,0.472,0.433,0.518,4,0.433,0.041,0.382,0.046,0.501,0.045
+840,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.438,0.336,0.632,4,0.303,0.289,0.318,6,0.454,0.44,0.468,4,0.398,0.083,0.355,0.077,0.473,0.157
+860,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.4,0.369,0.436,4,0.404,0.304,0.605,5,0.408,0.319,0.568,4,0.404,0.004,0.331,0.034,0.536,0.089
+880,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.39,0.314,0.514,4,0.353,0.276,0.491,6,0.456,0.394,0.541,4,0.4,0.052,0.328,0.06,0.515,0.025
+900,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.419,0.299,0.7,4,0.365,0.322,0.423,6,0.455,0.418,0.5,4,0.413,0.045,0.346,0.063,0.541,0.143
+920,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.405,0.303,0.609,4,0.412,0.304,0.641,5,0.462,0.345,0.7,4,0.426,0.031,0.317,0.024,0.65,0.046
+940,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.447,0.358,0.595,4,0.401,0.33,0.509,6,0.503,0.446,0.577,4,0.45,0.051,0.378,0.061,0.56,0.045
+960,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.427,0.403,0.455,4,0.425,0.341,0.564,5,0.424,0.412,0.436,4,0.425,0.002,0.385,0.039,0.485,0.069
+980,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.447,0.432,0.464,4,0.437,0.355,0.568,5,0.463,0.468,0.459,4,0.449,0.013,0.418,0.058,0.497,0.062
+1000,abt_buy,Random Sample 500,,50,20,hybrid,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.5,0.455,0.555,4,0.454,0.385,0.555,5,0.451,0.402,0.514,4,0.468,0.027,0.414,0.037,0.541,0.024
