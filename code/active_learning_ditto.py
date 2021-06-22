@@ -7,7 +7,7 @@ import subprocess
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, batch_size, epochs):
+def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, learning_model, learning_rate, max_len, batch_size, epochs):
 
   model = str(task) + '.pt'
   
@@ -51,10 +51,12 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --task %s \
       --input_path %s \
       --output_path %s \
-      --lm distilbert \
+      --lm %s \
       --use_gpu \
       --fp16 \
-      --checkpoint_path checkpoints/""" % (task, input_path+task+'_unlabeled_pool.jsonl', output_path+task+'_prediction.jsonl')
+      --checkpoint_path checkpoints/""" % (task,
+      input_path+task+'_unlabeled_pool.jsonl',
+      output_path+task+'_prediction.jsonl', learning_model)
 
     #os.system(cmd)
     # invoke process
@@ -68,6 +70,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       if output:
         print(output.strip())
     rc = process.poll()
+    print('Return code: ' + str(rc))
 
     predictions = pd.read_json(output_path+task+'_prediction.jsonl', lines=True)
 
@@ -116,14 +119,14 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     cmd = """python train_ditto.py \
       --task %s \
       --batch_size %d \
-      --max_len 256 \
-      --lr 3e-5 \
+      --max_len %d \
+      --lr %s \
       --n_epochs %d \
       --finetuning \
-      --lm distilbert \
+      --lm %s \
       --fp16 \
-      --balance \
-      --save_model""" % (task, batch_size, epochs)
+      --save_model""" % (task, batch_size, max_len, learning_rate, epochs, learning_model)
+      #--balance \
 
     #os.system(cmd)
     # invoke process
@@ -137,6 +140,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       if output:
         print(output.strip())
     rc = process.poll()
+    print('Return code: ' + str(rc))
 
     print("Size labeled set " + str(labeled_set_raw.shape[0]))
     print("Size unlabeled pool " + str(pool_data.shape[0]))
@@ -160,10 +164,11 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --task %s \
       --input_path %s \
       --output_path %s \
-      --lm distilbert \
+      --lm %s \
       --use_gpu \
       --fp16 \
-      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl', output_path+task+'_test_prediction.jsonl')
+      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl',
+      output_path+task+'_test_prediction.jsonl', learning_model)
 
     #os.system(cmd)
     # invoke process
@@ -177,6 +182,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       if output:
         print(output.strip())
     rc = process.poll()
+    print('Return code: ' + str(rc))
 
     test_predictions = pd.read_json(output_path+task+'_test_prediction.jsonl', lines=True)
 
@@ -186,10 +192,6 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
             test_predictions['match'],
             average='binary')
     
-    print('F1: ' + str(round(fscore,3)))
-    print('Precision: ' + str(round(prec,3)))
-    print('Recall: ' + str(round(recall,3)))
-
     f1_scores.append(round(fscore,3))
     precision_scores.append(round(prec,3))
     recall_scores.append(round(recall,3))

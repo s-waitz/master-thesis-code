@@ -10,7 +10,7 @@ import numpy as np
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
 
-def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', batch_size=32, epochs=2):
+def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2):
 
     # Delete all models
     cmd = 'rm *.pt'
@@ -56,7 +56,39 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
         # Initialize model
         if transfer_learning_dataset != None:
 
-          pass
+            # Train model on transfer learning dataset
+
+            print('Initialize model with transfer learning ...')
+
+            cmd = 'CUDA_VISIBLE_DEVICES=0'
+            os.system(cmd)
+
+            cmd = """python train_ditto.py \
+              --task %s \
+              --batch_size %d \
+              --max_len %d \
+              --lr %s \
+              --n_epochs %d \
+              --finetuning \
+              --lm %s \
+              --fp16 \
+              --balance \
+              --save_model""" % (transfer_learning_dataset, batch_size, max_len, learning_rate, epochs,
+              learning_model)
+
+            #os.system(cmd)
+            # invoke process
+            process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
+
+            # Poll process.stdout to show stdout live
+            while True:
+              output = process.stdout.readline()
+              if process.poll() is not None:
+                break
+              if output:
+                print(output.strip())
+            rc = process.poll()
+            print('Return code: ' + str(rc))
 
         else:
             random_train_data = train_data.sample(n=init_random_sample, weights=None, axis=None)
@@ -72,14 +104,14 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             cmd = """python train_ditto.py \
               --task %s \
               --batch_size %d \
-              --max_len 256 \
-              --lr 3e-5 \
+              --max_len %d \
+              --lr %s \
               --n_epochs %d \
               --finetuning \
-              --lm distilbert \
+              --lm %s \
               --fp16 \
               --balance \
-              --save_model""" % (task, batch_size, epochs)
+              --save_model""" % (task, batch_size, max_len, learning_rate, epochs, learning_model)
 
             #os.system(cmd)
             # invoke process
@@ -93,12 +125,13 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
               if output:
                 print(output.strip())
             rc = process.poll()
+            print('Return code: ' + str(rc))
 
        
         results_al = active_learning_ditto(task, al_iterations, sampling_size,
                                            base_data_path, labeled_set_path,
-                                           input_path, output_path,
-                                           batch_size, epochs)
+                                           input_path, output_path, learning_model, 
+                                           learning_rate, max_len, batch_size, epochs)
         if run == 1:
             results = pd.DataFrame()
             # build final results dataframe and save results
@@ -150,7 +183,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
 
 
 
-def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', batch_size=32, epochs=2):
+def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2):
     
     # Delete all models
     cmd = 'rm *.pt'
@@ -184,14 +217,14 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     cmd = """python train_ditto.py \
         --task %s \
         --batch_size %d \
-        --max_len 256 \
-        --lr 3e-5 \
+        --max_len %d \
+        --lr %s \
         --n_epochs %d \
         --finetuning \
-        --lm distilbert \
+        --lm %s \
         --fp16 \
         --balance \
-        --save_model""" % (task, batch_size, epochs)
+        --save_model""" % (task, batch_size, max_len, learning_rate, epochs, learning_model)
 
     #os.system(cmd)
     # invoke process
@@ -205,6 +238,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
         if output:
             print(output.strip())
     rc = process.poll()
+    print('Return code: ' + str(rc))
 
     # Delete all predictions
     cmd = 'rm %s' % (output_path+task+'_test_prediction.jsonl')
@@ -225,10 +259,11 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
       --task %s \
       --input_path %s \
       --output_path %s \
-      --lm distilbert \
+      --lm %s \
       --use_gpu \
       --fp16 \
-      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl', output_path+task+'_test_prediction.jsonl')
+      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl',
+      output_path+task+'_test_prediction.jsonl', learning_model)
 
     #os.system(cmd)
     # invoke process
@@ -242,6 +277,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
       if output:
         print(output.strip())
     rc = process.poll()
+    print('Return code: ' + str(rc))
 
     test_predictions = pd.read_json(output_path+task+'_test_prediction.jsonl', lines=True)
 
