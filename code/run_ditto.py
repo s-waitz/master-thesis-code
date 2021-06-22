@@ -141,6 +141,9 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             results['Transfer Learning Dataset']=transfer_learning_dataset
             results['AL Runs']=al_iterations
             results['Sampling Size']=sampling_size
+            results['Learning Model']=learning_model
+            results['Learning Rate']=learning_rate
+            results['Max Length']=max_len
             results['Epochs']=epochs
             results['Batch Size']=batch_size
             results['Data Augmentation']=data_augmentation
@@ -291,11 +294,12 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
         results_pl = pd.read_csv(save_results_file)
     except:
         results_pl = pd.DataFrame(columns = ['Task','Method','Date','Train Size', 'F1',
-                                        'Precision','Recall','Epochs',
-                                        'Batch Size'])
+                                        'Precision','Recall','Learning Model','Learning Rate',
+                                        'Max Length','Epochs','Batch Size'])
 
     results_pl = results_pl.append({'Task':task,'Method':'Passive Learing','Date':date.today().strftime("%d.%m.%Y"),
                    'Train Size':train_size,'F1':round(fscore,3),'Precision':round(prec,3),'Recall':round(recall,3),
+                   'Learning Model':learning_model, 'Learning Rate':learning_rate, 'Max Lenght':max_len,
                    'Epochs':epochs,'Batch Size':batch_size},ignore_index=True)
                    
     results_pl.to_csv(save_results_file, index=False)
