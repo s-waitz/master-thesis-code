@@ -10,7 +10,7 @@ import numpy as np
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
 
-def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False):
+def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False, da='del', dk=True, su=True):
 
     # Delete all models
     cmd = 'rm *.pt'
@@ -74,7 +74,12 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
               --fp16 \
               --save_model""" % (transfer_learning_dataset, batch_size, max_len, learning_rate, epochs,
               learning_model)
-
+            if da:
+                cmd += ' --da %s' % da
+            if dk:
+                cmd += ' --dk general'
+            if su:
+                cmd += ' --summarize'
             if balance:
                 cmd += ' --balance'
 
@@ -114,7 +119,12 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
               --fp16 \
               --save_model""" % (task, batch_size, max_len, learning_rate,
               epochs, learning_model)
-
+            if da:
+                cmd += ' --da %s' % da
+            if dk:
+                cmd += ' --dk general'
+            if su:
+                cmd += ' --summarize'
             if balance:
                 cmd += ' --balance'
 
@@ -155,6 +165,9 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             results['Data Augmentation']=data_augmentation
             results['High.Conf.LS']=high_conf_to_ls
             results['DA Threshold']=da_threshold
+            results['DA']=da
+            results['DK']=dk
+            results['SU']=su
 
         results['Run ' + str(run) + ': f1'] = results_al['f1']
         results['Run ' + str(run) + ': precision'] = results_al['precision']
@@ -192,7 +205,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
 
 
 
-def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False):
+def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False, da='del', dk=True, su=True):
     
     # Delete all models
     cmd = 'rm *.pt'
@@ -234,7 +247,12 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
         --fp16 \
         --save_model""" % (task, batch_size, max_len, learning_rate, epochs,
         learning_model)
-        
+    if da:
+        cmd += ' --da %s' % da
+    if dk:
+        cmd += ' --dk general'
+    if su:
+        cmd += ' --summarize'        
     if balance:
         cmd += ' --balance'
 
@@ -272,11 +290,15 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
       --input_path %s \
       --output_path %s \
       --lm %s \
+      --max_len %d \
       --use_gpu \
       --fp16 \
       --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl',
-      output_path+task+'_test_prediction.jsonl', learning_model)
-
+      output_path+task+'_test_prediction.jsonl', learning_model, max_len)
+    if dk:
+        cmd += ' --dk general'
+    if su:
+        cmd += ' --summarize'  
     #os.system(cmd)
     # invoke process
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
@@ -304,12 +326,12 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     except:
         results_pl = pd.DataFrame(columns = ['Task','Method','Date','Train Size', 'F1',
                                         'Precision','Recall','Learning Model','Learning Rate',
-                                        'Max Length','Epochs','Batch Size'])
+                                        'Max Length','Epochs','Batch Size','DA','DK','SU'])
 
     results_pl = results_pl.append({'Task':task,'Method':'Passive Learing','Date':date.today().strftime("%d.%m.%Y"),
                    'Train Size':train_size,'F1':round(fscore,3),'Precision':round(prec,3),'Recall':round(recall,3),
                    'Learning Model':learning_model, 'Learning Rate':learning_rate, 'Max Lenght':max_len,
-                   'Epochs':epochs,'Batch Size':batch_size},ignore_index=True)
+                   'Epochs':epochs,'Batch Size':batch_size,'DA':da,'DK':dk,'SU':su},ignore_index=True)
                    
     results_pl.to_csv(save_results_file, index=False)
 

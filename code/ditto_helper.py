@@ -37,6 +37,7 @@ def to_jsonl(input_file, output_file):
       left_dict = {}
       right_dict = {}
       for k,v in row.items():
+        v = re.sub('\t', ' ', str(v))
         if k.startswith('left'):
             left_dict[removeprefix(k,'left_')]=v
         if k.startswith('right'):

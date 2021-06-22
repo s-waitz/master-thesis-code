@@ -7,7 +7,7 @@ import subprocess
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, learning_model, learning_rate, max_len, batch_size, epochs, balance):
+def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su):
 
   model = str(task) + '.pt'
   
@@ -52,12 +52,16 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --input_path %s \
       --output_path %s \
       --lm %s \
+      --max_len %d \
       --use_gpu \
       --fp16 \
       --checkpoint_path checkpoints/""" % (task,
       input_path+task+'_unlabeled_pool.jsonl',
-      output_path+task+'_prediction.jsonl', learning_model)
-
+      output_path+task+'_prediction.jsonl', learning_model, max_len)
+    if dk:
+        cmd += ' --dk general'
+    if su:
+        cmd += ' --summarize'  
     #os.system(cmd)
     # invoke process
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
@@ -127,9 +131,14 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --fp16 \
       --save_model""" % (task, batch_size, max_len, learning_rate, epochs,
       learning_model)
-      
+    if da:
+      cmd += ' --da %s' % da
+    if dk:
+      cmd += ' --dk general'
+    if su:
+      cmd += ' --summarize'
     if balance:
-        cmd += ' --balance'
+      cmd += ' --balance'
 
     #os.system(cmd)
     # invoke process
@@ -168,10 +177,11 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --input_path %s \
       --output_path %s \
       --lm %s \
+      --max_len %d \
       --use_gpu \
       --fp16 \
       --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl',
-      output_path+task+'_test_prediction.jsonl', learning_model)
+      output_path+task+'_test_prediction.jsonl', learning_model, max_len)
 
     #os.system(cmd)
     # invoke process
