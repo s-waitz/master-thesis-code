@@ -7,7 +7,7 @@ import subprocess
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, learning_model, learning_rate, max_len, batch_size, epochs):
+def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, learning_model, learning_rate, max_len, batch_size, epochs, balance):
 
   model = str(task) + '.pt'
   
@@ -125,8 +125,11 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --finetuning \
       --lm %s \
       --fp16 \
-      --save_model""" % (task, batch_size, max_len, learning_rate, epochs, learning_model)
-      #--balance \
+      --save_model""" % (task, batch_size, max_len, learning_rate, epochs,
+      learning_model)
+      
+    if balance:
+        cmd += ' --balance'
 
     #os.system(cmd)
     # invoke process
