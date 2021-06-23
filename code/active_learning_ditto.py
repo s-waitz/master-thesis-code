@@ -31,7 +31,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
   number_labeled_examples = 0
 
   # Pick a checkpoint, rename it
-  cmd = 'mv *_dev.pt checkpoints/%s' % (model)
+  cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)
   os.system(cmd)
 
   for i in range(1,al_iterations+1):
@@ -151,9 +151,9 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     to_jsonl('temp/'+task+'_unlabeled_pool', input_path+task+'_unlabeled_pool.jsonl')
 
     # Delete all models
-    cmd = 'rm checkpoints/*.pt'
+    cmd = 'rm checkpoints/%s' % (model)
     os.system(cmd)
-    cmd = 'rm *.pt'
+    cmd = 'rm *%s*.pt' % (task)
     os.system(cmd)
 
     # Train model on labeled set
@@ -206,7 +206,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     os.system(cmd)
 
     # Pick a checkpoint, rename it
-    cmd = 'mv *_dev.pt checkpoints/%s' % (model)
+    cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)
     os.system(cmd)
 
     # run prediction on test set

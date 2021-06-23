@@ -12,8 +12,8 @@ from active_learning_ditto import active_learning_ditto
 
 def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=40, balance=False, da='del', dk=True, su=False):
 
-    # Delete all models
-    cmd = 'rm *.pt'
+    # Delete all models for this task
+    cmd = 'rm *%s*.pt' % (task)
     os.system(cmd)
 
     model = str(task) + '.pt'
@@ -209,7 +209,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
 def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False, da='del', dk=True, su=True):
     
     # Delete all models
-    cmd = 'rm *.pt'
+    cmd = 'rm *%s*.pt' % (task)
     os.system(cmd)
 
     model = str(task) + '.pt'
