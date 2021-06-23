@@ -1,5 +1,6 @@
 import os
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.metrics import confusion_matrix
 import pandas as pd
 import os.path
 import shlex
@@ -7,7 +8,7 @@ import subprocess
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su):
+def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su):
 
   model = str(task) + '.pt'
   
@@ -25,6 +26,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
   precision_scores = []
   recall_scores = []
   labeled_set_size = []
+  data_augmentation_labels = []
 
   number_labeled_examples = 0
 
@@ -98,11 +100,52 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
     number_labeled_examples += low_conf_pairs_true.shape[0] + low_conf_pairs_false.shape[0]
 
-    #todo: data augmentation
+    # data augmentation
+    if data_augmentation:
+        
+        if da_threshold == 0:
+            # Select k pairs with lowest entropy for data augmentation
+            high_conf_pairs_true = predictions_true['match_confidence'].nlargest(int(sampling_size/2))
+            high_conf_pairs_false = predictions_false['match_confidence'].nlargest(int(sampling_size/2))
+        else:
+            # select pairs with high probability for data augmentation
+            high_conf_pairs_true = predictions_true[predictions_true['match_confidence']>=da_threshold]
+            # select pairs with low probability for data augmentation
+            high_conf_pairs_false = predictions_false[predictions_false['match_confidence']>=(da_threshold)]
+            print("Data Augmentation True: " + str(high_conf_pairs_true.shape[0]))
+            print("Data Augmentation False: " + str(high_conf_pairs_false.shape[0]))
+            
+        # Use prediction as label #TODO
+        data_augmentation_true = pool_data[pool_data.index.isin(high_conf_pairs_true.index.tolist())]
+        data_augmentation_true['label'] = 1
+        data_augmentation_false = pool_data[pool_data.index.isin(high_conf_pairs_false.index.tolist())]
+        data_augmentation_false['label'] = 0
+
+        # Add them to labeled set (based on flag)
+        if high_conf_to_ls:
+            labeled_set_raw = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
+            labeled_set_temp = labeled_set_raw
+        else:
+            labeled_set_temp = labeled_set_raw.append([data_augmentation_true,data_augmentation_false])
+        
+        # Calculate noisy in high confidence examples
+        da_examples = pd.concat([data_augmentation_true,data_augmentation_false])
+        da_examples = da_examples.merge(oracle[['id','label']],how='left',on='id',suffixes=('', '_oracle'))
+        if da_examples.shape[0] > 0:
+            tn, fp, fn, tp = confusion_matrix(da_examples['label_oracle'],da_examples['label'],labels=[0,1]).ravel()
+        else:
+            tn = 0
+            fp = 0
+            fn = 0
+            tp = 0
+        data_augmentation_labels.append([tn, fp, fn, tp])
+    
+    else:
+        labeled_set_temp = labeled_set_raw
 
     to_ditto_format(labeled_set_raw, labeled_set_path+task+'_train.txt')
 
-    # Remove labeled pairs from unlabeled pool
+    # Remove labeled pairs from unlabeled pool    
     pool_data = pool_data[~pool_data.index.isin(labeled_set_raw.index.tolist())]
     pool_data.to_csv('temp/'+task+'_unlabeled_pool', index=False)
     to_jsonl('temp/'+task+'_unlabeled_pool', input_path+task+'_unlabeled_pool.jsonl')
@@ -205,7 +248,11 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
             test_data['label'],
             test_predictions['match'],
             average='binary')
-    
+
+    print('f1: ' + str(round(fscore,3)))
+    print('precision: ' + str(round(prec,3)))
+    print('recall: ' + str(round(recall,3)))
+
     f1_scores.append(round(fscore,3))
     precision_scores.append(round(prec,3))
     recall_scores.append(round(recall,3))
@@ -217,6 +264,10 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     'precision': precision_scores,
     'recall': recall_scores
     })
+
+  if data_augmentation:
+        all_scores['da labels']=data_augmentation_labels
+
   print(all_scores)
 
   return all_scores

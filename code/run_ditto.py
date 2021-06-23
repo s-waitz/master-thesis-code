@@ -145,7 +145,8 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
        
         results_al = active_learning_ditto(task, al_iterations, sampling_size,
                                            base_data_path, labeled_set_path,
-                                           input_path, output_path, learning_model, 
+                                           input_path, output_path, data_augmentation, 
+                                           high_conf_to_ls, da_threshold, learning_model, 
                                            learning_rate, max_len, batch_size, epochs,
                                            balance, da, dk, su)
         if run == 1:
@@ -172,8 +173,8 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
         results['Run ' + str(run) + ': f1'] = results_al['f1']
         results['Run ' + str(run) + ': precision'] = results_al['precision']
         results['Run ' + str(run) + ': recall'] = results_al['recall']
-        #if data_augmentation:
-        #    results['Run ' + str(run) + ': da labels'] = results_al['da labels']
+        if data_augmentation:
+            results['Run ' + str(run) + ': da labels'] = results_al['da labels']
 
         if run > 1:
             all_f1 = np.vstack((all_f1,results_al['f1']))
