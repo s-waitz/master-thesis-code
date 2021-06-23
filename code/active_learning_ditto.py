@@ -129,8 +129,9 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
       --finetuning \
       --lm %s \
       --fp16 \
+      --run_id %d \
       --save_model""" % (task, batch_size, max_len, learning_rate, epochs,
-      learning_model)
+      learning_model, i)
     if da:
       cmd += ' --da %s' % da
     if dk:
