@@ -143,7 +143,10 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     else:
         labeled_set_temp = labeled_set_raw
 
-    to_ditto_format(labeled_set_raw, labeled_set_path+task+'_train.txt')
+    to_ditto_format(labeled_set_temp, labeled_set_path+task+'_train.txt')
+
+    # TEST: save labeled set
+    labeled_set_temp.to_csv("labeled_set_" + str(i), index=False)
 
     # Remove labeled pairs from unlabeled pool    
     pool_data = pool_data[~pool_data.index.isin(labeled_set_raw.index.tolist())]

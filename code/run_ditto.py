@@ -276,7 +276,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     os.system(cmd)
 
     # Pick a checkpoint, rename it
-    cmd = 'mv *_dev.pt checkpoints/%s' % (model)
+    cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)
     os.system(cmd)
 
     # run prediction on test set
