@@ -298,8 +298,8 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
       output_path+task+'_test_prediction.jsonl', learning_model, max_len)
     if dk:
         cmd += ' --dk general'
-    if su:
-        cmd += ' --summarize'  
+    #if su:
+    #    cmd += ' --summarize'  
     #os.system(cmd)
     # invoke process
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
