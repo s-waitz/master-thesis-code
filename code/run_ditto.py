@@ -17,6 +17,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
     files_su = glob.glob(labeled_set_path+task+'*su*')
     files_dk = glob.glob(labeled_set_path+task+'*dk*')
     files_to_delete = files_su + files_dk
+    files_to_delete = set(files_to_delete)
     for file in files_to_delete:
         os.remove(file)
 
@@ -220,6 +221,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     files_su = glob.glob(ditto_data_path+task+'*su*')
     files_dk = glob.glob(ditto_data_path+task+'*dk*')
     files_to_delete = files_su + files_dk
+    files_to_delete = set(files_to_delete)
     for file in files_to_delete:
         os.remove(file)
     

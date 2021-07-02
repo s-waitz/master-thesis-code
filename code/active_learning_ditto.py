@@ -164,9 +164,10 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     files_su = glob.glob(labeled_set_path+task+'*su*')
     files_dk = glob.glob(labeled_set_path+task+'*dk*')
     files_to_delete = files_su + files_dk
+    files_to_delete = set(files_to_delete)
     for file in files_to_delete:
         os.remove(file)
-        
+
     # Train model on labeled set
 
     print('Train model on labeled set ...')
