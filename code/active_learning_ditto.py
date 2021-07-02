@@ -5,6 +5,7 @@ import pandas as pd
 import os.path
 import shlex
 import subprocess
+import glob
 
 from ditto_helper import to_ditto_format, to_jsonl
 
@@ -159,6 +160,13 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     cmd = 'rm *%s*.pt' % (task)
     os.system(cmd)
 
+    # Delete files from last run
+    files_su = glob.glob(labeled_set_path+task+'*su*')
+    files_dk = glob.glob(labeled_set_path+task+'*dk*')
+    files_to_delete = files_su + files_dk
+    for file in files_to_delete:
+        os.remove(file)
+        
     # Train model on labeled set
 
     print('Train model on labeled set ...')
