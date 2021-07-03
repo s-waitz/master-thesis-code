@@ -60,6 +60,19 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
 
     number_labeled_examples = 0
 
+    # Save results for first prediction with initialized model
+    # todo
+    prec, recall, fscore, _ = precision_recall_fscore_support(
+        test_data['label'],
+        np.where(model.run_prediction(test_set)['match_score'] >= 0.5, 1, 0),
+        average='binary')
+
+    f1_scores.append(round(fscore,3))
+    precision_scores.append(round(prec,3))
+    recall_scores.append(round(recall,3))
+    labeled_set_size.append(number_labeled_examples)
+    pos_neg_ratios.append(0)
+
     # (1)
     for i in range(1,al_iterations+1):
 

@@ -35,6 +35,64 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
   cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)
   os.system(cmd)
 
+  # Save results for first prediction with initialized model
+
+  print('Run prediction on test set ...')
+
+  # Delete all predictions
+  cmd = 'rm %s' % (output_path+task+'_test_prediction.jsonl')
+  os.system(cmd)
+
+  cmd = 'CUDA_VISIBLE_DEVICES=0'
+  os.system(cmd)
+
+  cmd = """python matcher.py \
+    --task %s \
+    --input_path %s \
+    --output_path %s \
+    --lm %s \
+    --max_len %d \
+    --use_gpu \
+    --fp16 \
+    --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl',
+    output_path+task+'_test_prediction.jsonl', learning_model, max_len)
+
+  if dk:
+    cmd += ' --dk general'
+  #if su:
+  #    cmd += ' --summarize'  
+
+  #os.system(cmd)
+  # invoke process
+  process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
+
+  # Poll process.stdout to show stdout live
+  while True:
+    output = process.stdout.readline()
+    if process.poll() is not None:
+      break
+    if output:
+      print(output.strip())
+  rc = process.poll()
+  print('Return code: ' + str(rc))
+
+  test_predictions = pd.read_json(output_path+task+'_test_prediction.jsonl', lines=True)
+
+  # calculate scores
+  prec, recall, fscore, _ = precision_recall_fscore_support(
+          test_data['label'],
+          test_predictions['match'],
+          average='binary')
+
+  print('f1: ' + str(round(fscore,3)))
+  print('precision: ' + str(round(prec,3)))
+  print('recall: ' + str(round(recall,3)))
+
+  f1_scores.append(round(fscore,3))
+  precision_scores.append(round(prec,3))
+  recall_scores.append(round(recall,3))
+  labeled_set_size.append(number_labeled_examples)
+
   for i in range(1,al_iterations+1):
 
     print("AL run: " + str(i))
