@@ -200,6 +200,10 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
         # new optimizer in each iteration
         optimizer = dm.optim.Optimizer(lr_decay=lr_decay)
 
+        # ignore columns only in first iteration
+        if i == 1 and init_method == 'Transfer Learning':
+            ignore_columns=('source_id','target_id')
+
         # Train model on labeled set 
         model.run_train(
             labeled_set,
