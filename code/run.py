@@ -9,7 +9,7 @@ import os.path
 
 from sklearn.metrics import precision_recall_fscore_support
 
-def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
+def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, split_validation=False, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
     
     if transfer_learning_dataset != None:
         init_method='Transfer Learning'
@@ -121,7 +121,7 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, t
         results_al = active_learning(train_data, validation_data, test_data, init_method,
             al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation,
             high_conf_to_ls, da_threshold, epochs, batch_size, lr_decay, embeddings, path_al_model,
-            attr_summarizer, attr_comparator)
+            attr_summarizer, attr_comparator, split_validation)
 
         if run == 1:
             results = pd.DataFrame()

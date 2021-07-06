@@ -4,10 +4,11 @@ import copy
 
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator):
+def active_learning(train_data, validation_data, test_data, init_method, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator, split_validation):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -36,20 +37,33 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
     pool_data = train_data.copy()
 
     # write data to csv for later processing
-    validation_data.to_csv('validation_set', index=False)
+    if split_validation == False:
+        validation_data.to_csv('validation_set', index=False)
     test_data.to_csv('test_set', index=False)
 
-    validation_set, test_set = dm.data.process(
-        path='',
-        validation='validation_set',
-        test='test_set', 
-        ignore_columns=ignore_columns,
-        left_prefix='left_',
-        right_prefix='right_',
-        label_attr='label',
-        id_attr='id',
-        cache=None,
-        embeddings=embeddings)
+    if split_validation == False:
+        validation_set, test_set = dm.data.process(
+            path='',
+            validation='validation_set',
+            test='test_set', 
+            ignore_columns=ignore_columns,
+            left_prefix='left_',
+            right_prefix='right_',
+            label_attr='label',
+            id_attr='id',
+            cache=None,
+            embeddings=embeddings)
+    else:
+        test_set = dm.data.process(
+            path='',
+            test='test_set', 
+            ignore_columns=ignore_columns,
+            left_prefix='left_',
+            right_prefix='right_',
+            label_attr='label',
+            id_attr='id',
+            cache=None,
+            embeddings=embeddings)
 
     f1_scores = []
     precision_scores = []
@@ -72,12 +86,16 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
     recall_scores.append(round(recall,3))
     labeled_set_size.append(number_labeled_examples)
     pos_neg_ratios.append(0)
+    data_augmentation_labels.append([0,0,0,0])
 
     # (1)
     for i in range(1,al_iterations+1):
 
 
         print("AL run: " + str(i))
+
+        print('Ignore: ')
+        print(ignore_columns)
 
         # process unlabeled pool for deepmatcher
         #pool_data.to_csv('unlabeled_pool', index=False)
@@ -179,30 +197,43 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
         if pn_ratio == 0:
             pn_ratio = 1
 
-        # process labeled set for deepmatcher
-        labeled_set_temp.to_csv('labeled_set', index=False)
+        # split labeled set into training and validation
+        if split_validation == False:
 
-        labeled_set,validation_set = dm.data.process(
+            # process labeled set for deepmatcher
+            labeled_set_temp.to_csv('labeled_set', index=False)
+
+        else:
+
+            y = labeled_set_temp['label']
+            labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
+                                                stratify=y, 
+                                                test_size=0.25)
+            labeled_set_temp.to_csv('labeled_set', index=False)
+            validation_set_temp.to_csv('validation_set', index=False)
+
+        # ignore columns only in first iteration
+        if i == 1 and init_method == 'Transfer Learning':
+            ignore_columns=('source_id','target_id')
+
+        labeled_set,validation_set,test_set = dm.data.process(
             path='',
             train='labeled_set',
             validation='validation_set',
+            test='test_set', 
             ignore_columns=ignore_columns,
             left_prefix='left_',
             right_prefix='right_',
             label_attr='label',
             id_attr='id',
             cache=None,
-            embeddings=embeddings)
+            embeddings=embeddings)  
 
         # new model in each iteration
         model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
         
         # new optimizer in each iteration
         optimizer = dm.optim.Optimizer(lr_decay=lr_decay)
-
-        # ignore columns only in first iteration
-        if i == 1 and init_method == 'Transfer Learning':
-            ignore_columns=('source_id','target_id')
 
         # Train model on labeled set 
         model.run_train(
@@ -216,6 +247,9 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
             
         print("Size labeled set " + str(labeled_set_raw.shape[0]))
         print("Size unlabeled pool " + str(pool_data.shape[0]))
+        print("Size labeled set temp " + str(labeled_set_temp.shape[0]))
+        if split_validation == True:
+            print("Size validation set temp " + str(validation_set_temp.shape[0]))
 
         # Save results
         # todo
