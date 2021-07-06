@@ -33,13 +33,16 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
         
     labeled_set_raw = None
 
-    oracle = train_data.copy()
-    pool_data = train_data.copy()
-
     # write data to csv for later processing
     if split_validation == False:
         validation_data.to_csv('validation_set', index=False)
+    else:
+        #merge train and validation set, since no explicit validation set is used
+        train_data = pd.concat([train_data, validation_data])
     test_data.to_csv('test_set', index=False)
+
+    oracle = train_data.copy()
+    pool_data = train_data.copy()
 
     if split_validation == False:
         validation_set, test_set = dm.data.process(
