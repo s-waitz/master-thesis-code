@@ -285,6 +285,9 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
 
     print("Size labeled set " + str(labeled_set_raw.shape[0]))
     print("Size unlabeled pool " + str(pool_data.shape[0]))
+    print("Size labeled set temp " + str(labeled_set_temp.shape[0]))
+    print("Size validation set temp " + str(validation_set_temp.shape[0]))
+
 
     # Delete all predictions
     cmd = 'rm %s' % (output_path+task+'_test_prediction.jsonl')
