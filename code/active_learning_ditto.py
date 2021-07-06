@@ -1,6 +1,7 @@
 import os
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
 import pandas as pd
 import os.path
 import shlex
@@ -18,10 +19,15 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
 
   labeled_set_raw = None
 
-  oracle = pd.read_csv(base_data_path + task + '_train')
-  pool_data = pd.read_csv(base_data_path + task + '_train')
+  #merge train and validation set, since no explicit validation set is used
+  train_data = pd.concat(
+    [pd.read_csv(base_data_path + task + '_train'),
+    pd.read_csv(base_data_path + task + '_validation')])
 
-  to_jsonl(base_data_path + task + '_train', input_path+task+'_unlabeled_pool.jsonl')
+  oracle = train_data
+  pool_data = train_data
+
+  to_jsonl(train_data, input_path+task+'_unlabeled_pool.jsonl')
 
   f1_scores = []
   precision_scores = []
@@ -202,7 +208,16 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     else:
         labeled_set_temp = labeled_set_raw
 
+    y = labeled_set_temp['label']
+    labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
+                                        stratify=y, 
+                                        test_size=0.25)
+    labeled_set_temp.to_csv('labeled_set', index=False)
+    validation_set_temp.to_csv('validation_set', index=False)
+
+
     to_ditto_format(labeled_set_temp, labeled_set_path+task+'_train.txt')
+    to_ditto_format(validation_set_temp, labeled_set_path+task+'_validation.txt')
 
     # TEST: save labeled set
     labeled_set_temp.to_csv("labeled_set_" + str(i), index=False)
