@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator, split_validation):
+def active_learning(train_data, validation_data, test_data, init_method, random_sample, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator, split_validation):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -31,18 +31,22 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
             return 0
         return int(round(num))
         
-    labeled_set_raw = None
+    # labeled set from random initialization, if tl None    
+    labeled_set_raw = random_sample
 
     # write data to csv for later processing
     if split_validation == False:
         validation_data.to_csv('validation_set', index=False)
     else:
         #merge train and validation set, since no explicit validation set is used
-        train_data = pd.concat([train_data, validation_data])
+        train_data = pd.concat([train_data, validation_data]).reset_index(drop=True)
     test_data.to_csv('test_set', index=False)
 
     oracle = train_data.copy()
     pool_data = train_data.copy()
+
+    #remove labeled pairs from unlabeled pool
+    pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
 
     if split_validation == False:
         validation_set, test_set = dm.data.process(
@@ -75,7 +79,11 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
     pos_neg_ratios = []
     data_augmentation_labels = []
 
-    number_labeled_examples = 0
+    if random_sample == None:
+        number_labeled_examples = 0
+    else:
+        number_labeled_examples = random_sample.shape[0]
+
 
     # Save results for first prediction with initialized model
     # todo
@@ -135,6 +143,14 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
         # Select k pairs with highest entropy for active learning
         low_conf_pairs_true = predictions_true['entropy'].nlargest(int(sampling_size/2))
         low_conf_pairs_false = predictions_false['entropy'].nlargest(int(sampling_size/2))
+        
+        # if now true pairs add false pairs instead
+        if low_conf_pairs_true.shape[0] == 0:
+            low_conf_pairs_false = low_conf_pairs_false.append(predictions_false['entropy'].nlargest(int(sampling_size/2)))
+        # if now false pairs add true pairs instead
+        if low_conf_pairs_false.shape[0] == 0:
+            low_conf_pairs_true = low_conf_pairs_true.append(predictions_true['entropy'].nlargest(int(sampling_size/2)))
+
         print('low_conf_pairs_true ' + str(low_conf_pairs_true.shape[0]))
         print('low_conf_pairs_false ' + str(low_conf_pairs_false.shape[0]))
         
@@ -209,9 +225,14 @@ def active_learning(train_data, validation_data, test_data, init_method, al_iter
         else:
 
             y = labeled_set_temp['label']
-            labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
-                                                stratify=y, 
-                                                test_size=0.25)
+            try:
+                labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
+                                                    stratify=y, 
+                                                    test_size=0.25)
+            except ValueError:
+                labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
+                                                    stratify=None,
+                                                    test_size=0.25)
             labeled_set_temp.to_csv('labeled_set', index=False)
             validation_set_temp.to_csv('validation_set', index=False)
 

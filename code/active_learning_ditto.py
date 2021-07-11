@@ -22,7 +22,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
   #merge train and validation set, since no explicit validation set is used
   train_data = pd.concat(
     [pd.read_csv(base_data_path + task + '_train'),
-    pd.read_csv(base_data_path + task + '_validation')])
+    pd.read_csv(base_data_path + task + '_validation')]).reset_index(drop=True)
 
   oracle = train_data
   pool_data = train_data
@@ -162,7 +162,11 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
         labeled_set_raw = oracle[oracle.index.isin(low_conf_pairs_true.index.tolist())]
         labeled_set_raw = labeled_set_raw.append(oracle[oracle.index.isin(low_conf_pairs_false.index.tolist())])
 
+    labeled_set_raw = labeled_set_raw.drop_duplicates()
     print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
+    print('index pairs true: ' + str(low_conf_pairs_true.index.tolist()))
+    print('index pairs false: ' + str(low_conf_pairs_false.index.tolist()))
+    print('index labeled set raw: ' + str(labeled_set_raw.index.tolist()))
     number_labeled_examples += low_conf_pairs_true.shape[0] + low_conf_pairs_false.shape[0]
 
     # data augmentation
@@ -318,7 +322,7 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
     if dk:
       cmd += ' --dk general'
     #if su:
-    #    cmd += ' --summarize'  
+    #  cmd += ' --summarize'  
 
     #os.system(cmd)
     # invoke process
