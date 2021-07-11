@@ -45,9 +45,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
     oracle = train_data.copy()
     pool_data = train_data.copy()
 
-    #remove labeled pairs from unlabeled pool
-    pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
-
     if split_validation == False:
         validation_set, test_set = dm.data.process(
             path='',
@@ -79,10 +76,12 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
     pos_neg_ratios = []
     data_augmentation_labels = []
 
-    if random_sample == None:
+    if random_sample is None:
         number_labeled_examples = 0
     else:
         number_labeled_examples = random_sample.shape[0]
+        #remove labeled pairs from unlabeled pool
+        pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
 
 
     # Save results for first prediction with initialized model

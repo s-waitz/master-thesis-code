@@ -10,24 +10,22 @@ import glob
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su):
+def active_learning_ditto(task, random_sample, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su):
 
   model = str(task) + '.pt'
   
   test_data = pd.read_csv(base_data_path+task+'_test')
   to_jsonl(base_data_path+task+'_test', input_path+task+'_test.jsonl')
 
-  labeled_set_raw = None
+  labeled_set_raw = random_sample
 
   #merge train and validation set, since no explicit validation set is used
   train_data = pd.concat(
     [pd.read_csv(base_data_path + task + '_train'),
     pd.read_csv(base_data_path + task + '_validation')]).reset_index(drop=True)
 
-  oracle = train_data
-  pool_data = train_data
-
-  to_jsonl(train_data, input_path+task+'_unlabeled_pool.jsonl')
+  oracle = train_data.copy()
+  pool_data = train_data.copy()
 
   f1_scores = []
   precision_scores = []
@@ -35,7 +33,14 @@ def active_learning_ditto(task, al_iterations, sampling_size, base_data_path, la
   labeled_set_size = []
   data_augmentation_labels = []
 
-  number_labeled_examples = 0
+  if random_sample is None:
+      number_labeled_examples = 0
+  else:
+      number_labeled_examples = random_sample.shape[0]
+      #remove labeled pairs from unlabeled pool
+      pool_data = pool_data[~pool_data.index.isin(labeled_set_raw.index.tolist())]
+
+  to_jsonl(pool_data, input_path+task+'_unlabeled_pool.jsonl')
 
   # Pick a checkpoint, rename it
   cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)

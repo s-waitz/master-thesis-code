@@ -1,5 +1,7 @@
 import os
+from scipy.sparse.construct import random
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.model_selection import train_test_split
 import pandas as pd
 from datetime import date
 import os.path
@@ -61,9 +63,12 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
         
         # Load datasets
         train_data = pd.read_csv(base_data_path + task + '_train')
+        validation_data = pd.read_csv(base_data_path + task + '_validation')
         
         # Initialize model
         if transfer_learning_dataset != None:
+
+            random_sample = None
 
             # Train model on transfer learning dataset
 
@@ -107,8 +112,23 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             print('Return code: ' + str(rc))
 
         else:
-            random_train_data = train_data.sample(n=init_random_sample, weights=None, axis=None)
+            all_data = pd.concat([train_data, validation_data]).reset_index(drop=True)
+            random_sample = all_data.sample(n=init_random_sample, weights=None, axis=None)
+            
+            y = random_sample['label']
+            try:
+                random_train_data, random_validation_data, _, _ = train_test_split(random_sample, y,
+                                                    stratify=y, 
+                                                    test_size=0.25)
+            except ValueError:
+                random_train_data, random_validation_data, _, _ = train_test_split(random_sample, y,
+                                                    stratify=None,
+                                                    test_size=0.25)
+
             to_ditto_format(random_train_data, labeled_set_path+task+'_train.txt')
+            to_ditto_format(random_validation_data, labeled_set_path+task+'_validation.txt')
+            print('Size Random Train Set ' + str(random_train_data.shape[0]))
+            print('Size Random Validation Set ' + str(random_validation_data.shape[0]))
 
             # Train model on random sample
 
@@ -152,7 +172,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             print('Return code: ' + str(rc))
 
        
-        results_al = active_learning_ditto(task, al_iterations, sampling_size,
+        results_al = active_learning_ditto(task, random_sample, al_iterations, sampling_size,
                                            base_data_path, labeled_set_path,
                                            input_path, output_path, data_augmentation, 
                                            high_conf_to_ls, da_threshold, learning_model, 
