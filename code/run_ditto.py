@@ -10,7 +10,9 @@ import subprocess
 import numpy as np
 import glob
 import torch
+import json
 from collections import OrderedDict
+from Snippext_public.snippext.model import MultiTaskNet
 
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
@@ -119,12 +121,18 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             os.system(cmd)
 
             # workaround to enable transfer learning
+            #configs = json.load(open('configs.json'))
+            #configs = {conf['name'] : conf for conf in configs}
+            #config = configs[task]
+            #m = MultiTaskNet([config], 'cuda', True, lm=learning_model)
             # load state dict
-            state_dict = torch.load('checkpoints/' + str(model), map_location=lambda storage, loc: storage)
+            #state_dict = torch.load('checkpoints/' + str(model), map_location=lambda storage, loc: storage)
             # change state dict for transfer learning
-            state_dict = OrderedDict({x.replace(transfer_learning_dataset, task): v for x, v in state_dict.items()})
+            #state_dict = OrderedDict({x.replace(transfer_learning_dataset, task): v for x, v in state_dict.items()})
+            #m.load_state_dict(state_dict)
             # save changed state dict
-            torch.save(state_dict, 'checkpoints/' + str(model))
+            #torch.save(state_dict, 'checkpoints/' + str(model))
+            #torch.save(m.state_dict(), 'checkpoints/' + str(model))
 
         else:
             all_data = pd.concat([train_data, validation_data]).reset_index(drop=True)
