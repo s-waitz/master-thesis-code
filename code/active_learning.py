@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, random_sample, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator, split_validation):
+def active_learning(train_data, validation_data, test_data, init_method, random_sample, train_data_tl, include_tl_data, tl_weights, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator, split_validation):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -75,6 +75,7 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
     labeled_set_size = []
     pos_neg_ratios = []
     data_augmentation_labels = []
+    all_sample_weights = []
 
     if random_sample is None:
         number_labeled_examples = 0
@@ -97,6 +98,7 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
     labeled_set_size.append(number_labeled_examples)
     pos_neg_ratios.append(0)
     data_augmentation_labels.append([0,0,0,0])
+    all_sample_weights.append([0,0])
 
     # (1)
     for i in range(1,al_iterations+1):
@@ -219,7 +221,8 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
         if split_validation == False:
 
             # process labeled set for deepmatcher
-            labeled_set_temp.to_csv('labeled_set', index=False)
+            #labeled_set_temp.to_csv('labeled_set', index=False)
+            pass
 
         else:
 
@@ -232,8 +235,38 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
                 labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
                                                     stratify=None,
                                                     test_size=0.25)
-            labeled_set_temp.to_csv('labeled_set', index=False)
+            #labeled_set_temp.to_csv('labeled_set', index=False)
             validation_set_temp.to_csv('validation_set', index=False)
+
+        if tl_weights == None:
+            sample_weights = None
+        else:
+            if tl_weights == 'calc':
+                source_weight = len(train_data_tl.shape[0]) / (len(train_data_tl.shape[0]) + len(labeled_set_temp.shape[0]))
+                target_weight = len(labeled_set_temp.shape[0]) / (len(train_data_tl.shape[0]) + len(labeled_set_temp.shape[0]))
+            else:
+                source_weight = tl_weights[0]
+                target_weight = tl_weights[1]
+
+            #source data weights
+            source_weights = dict(zip(train_data_tl['id'], [[source_weight]] * train_data_tl.shape[0]))
+            #target data weights
+            target_weights = dict(zip(labeled_set_temp['id'], [[target_weight]] * labeled_set_temp.shape[0]))
+            #create dictionary with sample weights
+            sample_weights = dict(source_weights)
+            sample_weights.update(target_weights)
+            print('Source Weight: ' + str(source_weight))
+            print('Target Weight: ' + str(target_weight))
+
+        if include_tl_data:
+            # TL: if source data is included
+            labeled_set_temp = train_data_tl.append(labeled_set_temp)
+            # reorder columns
+            labeled_set_temp = labeled_set_temp[test_data.columns.tolist()]
+            print("Columns combined set: " + str(labeled_set_temp.columns))
+            print("Size combined set: " + str(labeled_set_temp.shape[0]))
+
+        labeled_set_temp.to_csv('labeled_set', index=False)
 
         # ignore columns only in first iteration
         if i == 1 and init_method == 'Transfer Learning':
@@ -266,7 +299,8 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             batch_size=train_batch_size,
             best_save_path=path_al_model,
             optimizer=optimizer,
-            pos_neg_ratio=pn_ratio)
+            pos_neg_ratio=pn_ratio,
+            sample_weights=sample_weights)
             
         print("Size labeled set " + str(labeled_set_raw.shape[0]))
         print("Size unlabeled pool " + str(pool_data.shape[0]))
@@ -286,6 +320,8 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
         recall_scores.append(round(recall,3))
         labeled_set_size.append(number_labeled_examples)
         pos_neg_ratios.append(pn_ratio)
+        if include_tl_data:
+            all_sample_weights.append([source_weight,target_weight])
         
 
     all_scores = pd.DataFrame(
@@ -298,6 +334,9 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
  
     if data_augmentation:
         all_scores['da labels']=data_augmentation_labels
+
+    if include_tl_data:
+        all_scores['sample weights']=all_sample_weights
 
     return all_scores
         # Go to (1)

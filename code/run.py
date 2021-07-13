@@ -9,7 +9,7 @@ import os.path
 
 from sklearn.metrics import precision_recall_fscore_support
 
-def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, split_validation=False, transfer_learning_dataset=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
+def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, split_validation=False, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
     
     if transfer_learning_dataset != None:
         init_method='Transfer Learning'
@@ -86,6 +86,9 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
                 pos_neg_ratio=pn_ratio_tl)
 
         else:
+            
+            train_data_tl = None
+
             all_data = pd.concat([train_data, validation_data]).reset_index(drop=True)
             random_sample = all_data.sample(n=init_random_sample, weights=None, axis=None)
             
@@ -133,8 +136,8 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
                 best_save_path='init_model.pth',
                 pos_neg_ratio=pn_ratio_init)
 
-        results_al = active_learning(train_data, validation_data, test_data, init_method, random_sample,
-            al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation,
+        results_al = active_learning(train_data, validation_data, test_data, init_method, random_sample, train_data_tl,
+            include_tl_data, tl_weights, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation,
             high_conf_to_ls, da_threshold, epochs, batch_size, lr_decay, embeddings, path_al_model,
             attr_summarizer, attr_comparator, split_validation)
 
