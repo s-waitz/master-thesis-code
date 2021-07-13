@@ -159,6 +159,8 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
             results['Data Augmentation']=data_augmentation
             results['High.Conf.LS']=high_conf_to_ls
             results['DA Threshold']=da_threshold
+            if include_tl_data:
+                results['sample weights'] = results_al['sample weights']
 
         results['Run ' + str(run) + ': f1'] = results_al['f1']
         results['Run ' + str(run) + ': precision'] = results_al['precision']

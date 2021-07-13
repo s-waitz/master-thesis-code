@@ -42,10 +42,6 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, bas
 
   to_jsonl(pool_data, input_path+task+'_unlabeled_pool.jsonl')
 
-  # Pick a checkpoint, rename it
-  cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)
-  os.system(cmd)
-
   # Save results for first prediction with initialized model
 
   print('Run prediction on test set ...')

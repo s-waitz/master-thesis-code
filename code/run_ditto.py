@@ -9,6 +9,8 @@ import shlex
 import subprocess
 import numpy as np
 import glob
+import torch
+from collections import OrderedDict
 
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
@@ -25,6 +27,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
 
     # Delete all models for this task
     cmd = 'rm *%s*.pt' % (task)
+    cmd = 'rm *%s*.pt' % (transfer_learning_dataset)
     os.system(cmd)
 
     model = str(task) + '.pt'
@@ -111,6 +114,18 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             rc = process.poll()
             print('Return code: ' + str(rc))
 
+            # Move model to checkpoints
+            cmd = 'mv *%s*_dev.pt checkpoints/%s' % (transfer_learning_dataset, model)
+            os.system(cmd)
+
+            # workaround to enable transfer learning
+            # load state dict
+            state_dict = torch.load('checkpoints/' + str(model), map_location=lambda storage, loc: storage)
+            # change state dict for transfer learning
+            state_dict = OrderedDict({x.replace(transfer_learning_dataset, task): v for x, v in state_dict.items()})
+            # save changed state dict
+            torch.save(state_dict, 'checkpoints/' + str(model))
+
         else:
             all_data = pd.concat([train_data, validation_data]).reset_index(drop=True)
             random_sample = all_data.sample(n=init_random_sample, weights=None, axis=None)
@@ -171,6 +186,9 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             rc = process.poll()
             print('Return code: ' + str(rc))
 
+            # Move model to checkpoints
+            cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)
+            os.system(cmd)
        
         results_al = active_learning_ditto(task, random_sample, al_iterations, sampling_size,
                                            base_data_path, labeled_set_path,

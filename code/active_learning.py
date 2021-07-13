@@ -259,6 +259,8 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             print('Target Weight: ' + str(target_weight))
 
         if include_tl_data:
+            print("Labeled set size: " + str(labeled_set_temp.shape[0]))
+            print("Labeled set size: " + str(labeled_set_temp.shape[0]))
             # TL: if source data is included
             labeled_set_temp = train_data_tl.append(labeled_set_temp)
             # reorder columns
