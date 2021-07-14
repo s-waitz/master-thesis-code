@@ -9,15 +9,15 @@ import shlex
 import subprocess
 import numpy as np
 import glob
-import torch
-import json
+#import torch
+#import json
 from collections import OrderedDict
-from Snippext_public.snippext.model import MultiTaskNet
+#from Snippext_public.snippext.model import MultiTaskNet
 
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
 
-def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=40, balance=False, da='del', dk=True, su=False):
+def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, balance=False, da='del', dk=True, su=False):
 
     # Delete files from last run
     files_su = glob.glob(labeled_set_path+task+'*su*')
@@ -75,6 +75,9 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
 
             random_sample = None
 
+            if epochs_tl == None:
+                epochs_tl = epochs
+
             # Train model on transfer learning dataset
 
             print('Initialize model with transfer learning ...')
@@ -91,7 +94,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
               --finetuning \
               --lm %s \
               --fp16 \
-              --save_model""" % (transfer_learning_dataset, batch_size, max_len, learning_rate, epochs,
+              --save_model""" % (transfer_learning_dataset, batch_size, max_len, learning_rate, epochs_tl,
               learning_model)
             if da:
                 cmd += ' --da %s' % da
