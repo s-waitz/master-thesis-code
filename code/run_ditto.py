@@ -17,7 +17,7 @@ from collections import OrderedDict
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
 
-def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, balance=False, da='del', dk=True, su=False):
+def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, balance=False, da='del', dk=True, su=False):
 
     # Delete files from last run
     files_su = glob.glob(labeled_set_path+task+'*su*')
@@ -69,11 +69,16 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
         # Load datasets
         train_data = pd.read_csv(base_data_path + task + '_train')
         validation_data = pd.read_csv(base_data_path + task + '_validation')
+        test_data = pd.read_csv(base_data_path + task + '_test')
+
+        to_ditto_format(test_data, labeled_set_path+task+'_test.txt')
         
         # Initialize model
         if transfer_learning_dataset != None:
 
             random_sample = None
+
+            train_data_tl = pd.read_csv(base_data_path + transfer_learning_dataset + '_train')
 
             if epochs_tl == None:
                 epochs_tl = epochs
@@ -138,6 +143,9 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             #torch.save(m.state_dict(), 'checkpoints/' + str(model))
 
         else:
+
+            train_data_tl = None
+
             all_data = pd.concat([train_data, validation_data]).reset_index(drop=True)
             random_sample = all_data.sample(n=init_random_sample, weights=None, axis=None)
             
@@ -202,7 +210,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             os.system(cmd)
        
         results_al = active_learning_ditto(task, random_sample, al_iterations, sampling_size,
-                                           base_data_path, labeled_set_path,
+                                           train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path,
                                            input_path, output_path, data_augmentation, 
                                            high_conf_to_ls, da_threshold, learning_model, 
                                            learning_rate, max_len, batch_size, epochs,
@@ -227,6 +235,8 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             results['DA']=da
             results['DK']=dk
             results['SU']=su
+            if include_tl_data:
+                results['sample weights'] = results_al['sample weights']
 
         results['Run ' + str(run) + ': f1'] = results_al['f1']
         results['Run ' + str(run) + ': precision'] = results_al['precision']

@@ -1,4 +1,5 @@
 import os
+from numpy import TooHardError, source
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -10,12 +11,13 @@ import glob
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, random_sample, al_iterations, sampling_size, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su):
+def active_learning_ditto(task, random_sample, al_iterations, sampling_size, train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su):
 
   model = str(task) + '.pt'
   
   test_data = pd.read_csv(base_data_path+task+'_test')
   to_jsonl(base_data_path+task+'_test', input_path+task+'_test.jsonl')
+  to_ditto_format(test_data, labeled_set_path+task+'_test.txt')
 
   labeled_set_raw = random_sample
 
@@ -32,6 +34,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, bas
   recall_scores = []
   labeled_set_size = []
   data_augmentation_labels = []
+  all_sample_weights = []
 
   if random_sample is None:
       number_labeled_examples = 0
@@ -99,6 +102,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, bas
   precision_scores.append(round(prec,3))
   recall_scores.append(round(recall,3))
   labeled_set_size.append(number_labeled_examples)
+  all_sample_weights.append([0,0])
 
   for i in range(1,al_iterations+1):
 
@@ -213,13 +217,35 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, bas
     else:
         labeled_set_temp = labeled_set_raw
 
-    y = labeled_set_temp['label']
-    labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
-                                        stratify=y, 
-                                        test_size=0.25)
-    labeled_set_temp.to_csv('labeled_set', index=False)
-    validation_set_temp.to_csv('validation_set', index=False)
+        y = labeled_set_temp['label']
+        try:
+            labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
+                                                stratify=y, 
+                                                test_size=0.25)
+        except ValueError:
+            labeled_set_temp, validation_set_temp, _, _ = train_test_split(labeled_set_temp, y,
+                                                stratify=None,
+                                                test_size=0.25)
+        #labeled_set_temp.to_csv('labeled_set', index=False)
+        validation_set_temp.to_csv('validation_set', index=False)
 
+    if tl_weights != None:
+      if tl_weights == 'calc':
+          source_weight = len(train_data_tl.shape[0]) / (len(train_data_tl.shape[0]) + len(labeled_set_temp.shape[0]))
+          target_weight = len(labeled_set_temp.shape[0]) / (len(train_data_tl.shape[0]) + len(labeled_set_temp.shape[0]))
+      else:
+          source_weight = tl_weights[0]
+          target_weight = tl_weights[1]
+
+    if include_tl_data:
+        size_source = train_data_tl.shape[0]
+        size_target = labeled_set_temp.shape[0]
+        print("Labeled set size: " + str(labeled_set_temp.shape[0]))
+        # TL: if source data is included
+        labeled_set_temp = train_data_tl.append(labeled_set_temp)
+        print("Size combined set: " + str(labeled_set_temp.shape[0]))
+
+    labeled_set_temp.to_csv('labeled_set', index=False)
 
     to_ditto_format(labeled_set_temp, labeled_set_path+task+'_train.txt')
     to_ditto_format(validation_set_temp, labeled_set_path+task+'_validation.txt')
@@ -273,6 +299,11 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, bas
       cmd += ' --summarize'
     if balance:
       cmd += ' --balance'
+    if include_tl_data:
+      cmd += ' --size_source %d' % size_source
+      cmd += ' --size_target %d' % size_target
+      cmd += ' --weight_source %d' % source_weight
+      cmd += ' --weight_target %d' % target_weight
 
     #os.system(cmd)
     # invoke process
@@ -355,6 +386,8 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, bas
     precision_scores.append(round(prec,3))
     recall_scores.append(round(recall,3))
     labeled_set_size.append(number_labeled_examples)
+    if include_tl_data:
+        all_sample_weights.append([source_weight,target_weight])
 
   all_scores = pd.DataFrame(
     {'labeled set size': labeled_set_size,
@@ -365,6 +398,9 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, bas
 
   if data_augmentation:
         all_scores['da labels']=data_augmentation_labels
+
+  if include_tl_data:
+      all_scores['sample weights']=all_sample_weights
 
   print(all_scores)
 
