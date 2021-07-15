@@ -302,8 +302,8 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     if include_tl_data:
       cmd += ' --size_source %d' % size_source
       cmd += ' --size_target %d' % size_target
-      cmd += ' --weight_source %d' % source_weight
-      cmd += ' --weight_target %d' % target_weight
+      cmd += ' --weight_source %f' % source_weight
+      cmd += ' --weight_target %f' % target_weight
 
     #os.system(cmd)
     # invoke process
