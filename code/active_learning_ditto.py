@@ -231,8 +231,8 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
 
     if tl_weights != None:
       if tl_weights == 'calc':
-          source_weight = len(train_data_tl.shape[0]) / (len(train_data_tl.shape[0]) + len(labeled_set_temp.shape[0]))
-          target_weight = len(labeled_set_temp.shape[0]) / (len(train_data_tl.shape[0]) + len(labeled_set_temp.shape[0]))
+          source_weight = train_data_tl.shape[0] / (train_data_tl.shape[0] + labeled_set_temp.shape[0])
+          target_weight = labeled_set_temp.shape[0] / (train_data_tl.shape[0] + labeled_set_temp.shape[0])
       else:
           source_weight = tl_weights[0]
           target_weight = tl_weights[1]

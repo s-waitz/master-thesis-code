@@ -1,0 +1,12 @@
+labeled set size,Dataset,Initialization Method,Transfer Learning Dataset,AL Runs,Sampling Size,Attribute Summarizer,Attribute Comparator,Embeddings,Epochs,Batch Size,LR Decay,Data Augmentation,High.Conf.LS,DA Threshold,Run 1: f1,Run 1: precision,Run 1: recall,Run 1: pos_neg_ratio,Run 2: f1,Run 2: precision,Run 2: recall,Run 2: pos_neg_ratio,Run 3: f1,Run 3: precision,Run 3: recall,Run 3: pos_neg_ratio,F1 Mean,F1 Std,Precision Mean,Precision Std,Recall Mean,Recall Std
+20,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.402,0.266,0.822,0,0.359,0.277,0.511,0,0.418,0.269,0.933,0,0.393,0.025,0.271,0.005,0.755,0.179
+40,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.386,0.247,0.889,6,0.303,0.208,0.556,9,0.389,0.244,0.956,5,0.359,0.04,0.233,0.018,0.8,0.175
+60,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.444,0.315,0.756,9,0.335,0.23,0.622,11,0.398,0.251,0.956,6,0.392,0.045,0.265,0.036,0.778,0.137
+80,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.514,0.379,0.8,6,0.5,0.341,0.933,7,0.437,0.29,0.889,9,0.484,0.033,0.337,0.036,0.874,0.055
+100,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.526,0.391,0.8,6,0.579,0.411,0.978,8,0.566,0.395,1.0,6,0.557,0.023,0.399,0.009,0.926,0.09
+120,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.73,0.6,0.933,6,0.595,0.427,0.978,7,0.599,0.431,0.978,6,0.641,0.063,0.486,0.081,0.963,0.021
+140,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.632,0.477,0.933,6,0.629,0.463,0.978,7,0.604,0.433,1.0,7,0.622,0.013,0.458,0.018,0.97,0.028
+160,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.724,0.592,0.933,5,0.693,0.537,0.978,8,0.511,0.344,1.0,8,0.643,0.094,0.491,0.106,0.97,0.028
+180,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.727,0.579,0.978,4,0.715,0.564,0.978,8,0.506,0.341,0.978,10,0.649,0.101,0.495,0.109,0.978,0.0
+200,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.811,0.682,1.0,4,0.677,0.518,0.978,9,0.592,0.421,1.0,10,0.693,0.09,0.54,0.108,0.993,0.01
+220,wdc_headphones,Random Sample 20,,10,20,rnn,abs-diff,fasttext.en.bin,20,20,0.8,False,False,0,0.83,0.721,0.978,5,0.672,0.512,0.978,9,0.633,0.468,0.978,10,0.712,0.085,0.567,0.11,0.978,0.0
