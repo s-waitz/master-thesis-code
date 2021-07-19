@@ -1,0 +1,3 @@
+source_id;target_id;left_birthdate;left_deathdate;left_gender;left_label;left_work;right_birthdate;right_deathdate;right_gender;right_label;right_work;id;label
+http://dbpedia.org/resource/rian_james;http://viaf.org/viaf/61281532;1899-10-03;26.04.1953;male;Rian James;;14.11.1950;;male;James D. Parriott;;http://dbpedia.org/resource/rian_james-http://viaf.org/viaf/61281532;0
+http://dbpedia.org/resource/alistair_campbell_(poet);http://viaf.org/viaf/2761240;25.06.2025;16.08.2009;male;Alistair Campbell (poet);;25.06.1925;16.08.2009;male;Alistair Campbell;;http://dbpedia.org/resource/alistair_campbell_(poet)-http://viaf.org/viaf/2761240;1

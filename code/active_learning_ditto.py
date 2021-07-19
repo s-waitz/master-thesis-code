@@ -44,6 +44,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
       pool_data = pool_data[~pool_data.index.isin(labeled_set_raw.index.tolist())]
 
   to_jsonl(pool_data, input_path+task+'_unlabeled_pool.jsonl')
+  to_ditto_format(pool_data, input_path+task+'_unlabeled_pool.txt')
 
   # Save results for first prediction with initialized model
 
@@ -64,13 +65,13 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     --max_len %d \
     --use_gpu \
     --fp16 \
-    --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl',
+    --checkpoint_path checkpoints/""" % (task, labeled_set_path+task+'_test.txt',
     output_path+task+'_test_prediction.jsonl', learning_model, max_len)
 
   if dk:
     cmd += ' --dk general'
-  #if su:
-  #    cmd += ' --summarize'  
+  if su:
+    cmd += ' --summarize'  
 
   #os.system(cmd)
   # invoke process
@@ -128,12 +129,12 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
       --use_gpu \
       --fp16 \
       --checkpoint_path checkpoints/""" % (task,
-      input_path+task+'_unlabeled_pool.jsonl',
+      input_path+task+'_unlabeled_pool.txt',
       output_path+task+'_prediction.jsonl', learning_model, max_len)
     if dk:
         cmd += ' --dk general'
-    #if su:
-    #    cmd += ' --summarize'  
+    if su:
+        cmd += ' --summarize'  
     #os.system(cmd)
     # invoke process
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
@@ -231,8 +232,8 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
 
     if tl_weights != None:
       if tl_weights == 'calc':
-          source_weight = train_data_tl.shape[0] / (train_data_tl.shape[0] + labeled_set_temp.shape[0])
-          target_weight = labeled_set_temp.shape[0] / (train_data_tl.shape[0] + labeled_set_temp.shape[0])
+          source_weight = labeled_set_temp.shape[0] / (train_data_tl.shape[0] + labeled_set_temp.shape[0])
+          target_weight = train_data_tl.shape[0] / (train_data_tl.shape[0] + labeled_set_temp.shape[0])
       else:
           source_weight = tl_weights[0]
           target_weight = tl_weights[1]
@@ -257,6 +258,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     pool_data = pool_data[~pool_data.index.isin(labeled_set_raw.index.tolist())]
     pool_data.to_csv('temp/'+task+'_unlabeled_pool', index=False)
     to_jsonl('temp/'+task+'_unlabeled_pool', input_path+task+'_unlabeled_pool.jsonl')
+    to_ditto_format('temp/'+task+'_unlabeled_pool', input_path+task+'_unlabeled_pool.txt')
 
     # Delete all models
     cmd = 'rm checkpoints/%s' % (model)
@@ -348,13 +350,13 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
       --max_len %d \
       --use_gpu \
       --fp16 \
-      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl',
+      --checkpoint_path checkpoints/""" % (task, labeled_set_path+task+'_test.txt',
       output_path+task+'_test_prediction.jsonl', learning_model, max_len)
 
     if dk:
       cmd += ' --dk general'
-    #if su:
-    #  cmd += ' --summarize'  
+    if su:
+      cmd += ' --summarize'  
 
     #os.system(cmd)
     # invoke process

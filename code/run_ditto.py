@@ -370,12 +370,12 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
       --max_len %d \
       --use_gpu \
       --fp16 \
-      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.jsonl',
+      --checkpoint_path checkpoints/""" % (task, ditto_data_path+task+'_test.txt',
       output_path+task+'_test_prediction.jsonl', learning_model, max_len)
     if dk:
         cmd += ' --dk general'
-    #if su:
-    #    cmd += ' --summarize'  
+    if su:
+        cmd += ' --summarize'  
     #os.system(cmd)
     # invoke process
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
@@ -403,12 +403,12 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     except:
         results_pl = pd.DataFrame(columns = ['Task','Method','Date','Train Size', 'F1',
                                         'Precision','Recall','Learning Model','Learning Rate',
-                                        'Max Length','Epochs','Batch Size','DA','DK','SU'])
+                                        'Max Length','Epochs','Batch Size','DA','DK','SU','Balance'])
 
     results_pl = results_pl.append({'Task':task,'Method':'Passive Learing','Date':date.today().strftime("%d.%m.%Y"),
                    'Train Size':train_size,'F1':round(fscore,3),'Precision':round(prec,3),'Recall':round(recall,3),
                    'Learning Model':learning_model, 'Learning Rate':learning_rate, 'Max Lenght':max_len,
-                   'Epochs':epochs,'Batch Size':batch_size,'DA':da,'DK':dk,'SU':su},ignore_index=True)
+                   'Epochs':epochs,'Batch Size':batch_size,'DA':da,'DK':dk,'SU':su,'Balance':balance},ignore_index=True)
                    
     results_pl.to_csv(save_results_file, index=False)
 
