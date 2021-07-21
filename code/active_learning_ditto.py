@@ -11,13 +11,14 @@ import glob
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, random_sample, al_iterations, sampling_size, train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su):
+def active_learning_ditto(task, random_sample, al_iterations, sampling_size, train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su, verbose):
 
   model = str(task) + '.pt'
   
   test_data = pd.read_csv(base_data_path+task+'_test')
   to_jsonl(base_data_path+task+'_test', input_path+task+'_test.jsonl')
   to_ditto_format(test_data, labeled_set_path+task+'_test.txt')
+  to_ditto_format(test_data, input_path+task+'_test.txt')
 
   labeled_set_raw = random_sample
 
@@ -65,7 +66,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     --max_len %d \
     --use_gpu \
     --fp16 \
-    --checkpoint_path checkpoints/""" % (task, labeled_set_path+task+'_test.txt',
+    --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.txt',
     output_path+task+'_test_prediction.jsonl', learning_model, max_len)
 
   if dk:
@@ -78,12 +79,13 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
   process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
   # Poll process.stdout to show stdout live
-  while True:
-    output = process.stdout.readline()
-    if process.poll() is not None:
-      break
-    if output:
-      print(output.strip())
+  if verbose:
+      while True:
+          output = process.stdout.readline()
+          if process.poll() is not None:
+              break
+          if output:
+              print(output.strip())
   rc = process.poll()
   print('Return code: ' + str(rc))
 
@@ -140,12 +142,13 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
-    while True:
-      output = process.stdout.readline()
-      if process.poll() is not None:
-        break
-      if output:
-        print(output.strip())
+    if verbose:
+        while True:
+            output = process.stdout.readline()
+            if process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
     rc = process.poll()
     print('Return code: ' + str(rc))
 
@@ -312,12 +315,13 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
-    while True:
-      output = process.stdout.readline()
-      if process.poll() is not None:
-        break
-      if output:
-        print(output.strip())
+    if verbose:
+        while True:
+            output = process.stdout.readline()
+            if process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
     rc = process.poll()
     print('Return code: ' + str(rc))
 
@@ -350,7 +354,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
       --max_len %d \
       --use_gpu \
       --fp16 \
-      --checkpoint_path checkpoints/""" % (task, labeled_set_path+task+'_test.txt',
+      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.txt',
       output_path+task+'_test_prediction.jsonl', learning_model, max_len)
 
     if dk:
@@ -363,12 +367,13 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
-    while True:
-      output = process.stdout.readline()
-      if process.poll() is not None:
-        break
-      if output:
-        print(output.strip())
+    if verbose:
+        while True:
+            output = process.stdout.readline()
+            if process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
     rc = process.poll()
     print('Return code: ' + str(rc))
 

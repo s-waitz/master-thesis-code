@@ -17,7 +17,7 @@ from collections import OrderedDict
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
 
-def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, balance=False, da='del', dk=True, su=False):
+def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, balance=False, da='del', dk=True, su=False, verbose=False):
 
     # Delete files from last run
     files_su = glob.glob(labeled_set_path+task+'*su*')
@@ -115,12 +115,13 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
             # Poll process.stdout to show stdout live
-            while True:
-              output = process.stdout.readline()
-              if process.poll() is not None:
-                break
-              if output:
-                print(output.strip())
+            if verbose:
+                while True:
+                    output = process.stdout.readline()
+                    if process.poll() is not None:
+                        break
+                    if output:
+                        print(output.strip())
             rc = process.poll()
             print('Return code: ' + str(rc))
 
@@ -196,12 +197,13 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
             # Poll process.stdout to show stdout live
-            while True:
-              output = process.stdout.readline()
-              if process.poll() is not None:
-                break
-              if output:
-                print(output.strip())
+            if verbose:
+                while True:
+                    output = process.stdout.readline()
+                    if process.poll() is not None:
+                        break
+                    if output:
+                        print(output.strip())
             rc = process.poll()
             print('Return code: ' + str(rc))
 
@@ -214,7 +216,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
                                            input_path, output_path, data_augmentation, 
                                            high_conf_to_ls, da_threshold, learning_model, 
                                            learning_rate, max_len, batch_size, epochs,
-                                           balance, da, dk, su)
+                                           balance, da, dk, su, verbose)
         if run == 1:
             results = pd.DataFrame()
             # build final results dataframe and save results
@@ -253,6 +255,9 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             all_precision = results_al['precision']
             all_recall = results_al['recall']
 
+        # save intermediate results
+        results.to_csv(save_results_file, index=False)
+
     # calculate mean and standard deviation
     mean_f1 = np.mean(all_f1,axis=0)
     std_f1 = np.std(all_f1,axis=0)
@@ -274,7 +279,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
 
 
 
-def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False, da='del', dk=True, su=True):
+def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False, da='del', dk=True, su=True, verbose=False):
     
     # Delete files from last run
     files_su = glob.glob(ditto_data_path+task+'*su*')
@@ -304,6 +309,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     to_ditto_format(train_data, ditto_data_path+task+'_train.txt')
     to_ditto_format(validation_data, ditto_data_path+task+'_validation.txt')
     to_ditto_format(test_data, ditto_data_path+task+'_test.txt')
+    to_ditto_format(test_data, input_path+task+'_test.txt')
     to_jsonl(test_data, input_path+task+'_test.jsonl')
 
     # Train model
@@ -338,12 +344,13 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
-    while True:
-        output = process.stdout.readline()
-        if process.poll() is not None:
-            break
-        if output:
-            print(output.strip())
+    if verbose:
+        while True:
+            output = process.stdout.readline()
+            if process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
     rc = process.poll()
     print('Return code: ' + str(rc))
 
@@ -370,7 +377,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
       --max_len %d \
       --use_gpu \
       --fp16 \
-      --checkpoint_path checkpoints/""" % (task, ditto_data_path+task+'_test.txt',
+      --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.txt',
       output_path+task+'_test_prediction.jsonl', learning_model, max_len)
     if dk:
         cmd += ' --dk general'
@@ -381,12 +388,13 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
-    while True:
-      output = process.stdout.readline()
-      if process.poll() is not None:
-        break
-      if output:
-        print(output.strip())
+    if verbose:
+        while True:
+            output = process.stdout.readline()
+            if process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
     rc = process.poll()
     print('Return code: ' + str(rc))
 
@@ -397,6 +405,10 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
             test_data['label'],
             test_predictions['match'],
             average='binary')
+
+    print('f1: ' + str(round(fscore,3)))
+    print('precision: ' + str(round(prec,3)))
+    print('recall: ' + str(round(recall,3)))
     
     try:
         results_pl = pd.read_csv(save_results_file)

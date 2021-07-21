@@ -177,6 +177,9 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
             all_f1 = results_al['f1']
             all_precision = results_al['precision']
             all_recall = results_al['recall']
+        
+        # save intermediate results
+        results.to_csv(save_results_file, index=False)
 
     # calculate mean and standard deviation
     mean_f1 = np.mean(all_f1,axis=0)

@@ -10,6 +10,12 @@ def removeprefix(text, prefix):
         return text
 
 def to_ditto_format(df_input, output_file):
+
+  if isinstance(df_input, pd.DataFrame):
+    pass
+  else:
+    df_input = pd.read_csv(df_input)
+
   file = open(output_file,'w')
   left_atts = [col for col in df_input.columns if col.startswith('left')]
   right_atts = [col for col in df_input.columns if col.startswith('right')]
