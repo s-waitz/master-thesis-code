@@ -79,12 +79,12 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
   process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
   # Poll process.stdout to show stdout live
-  if verbose:
-      while True:
-          output = process.stdout.readline()
-          if process.poll() is not None:
-              break
-          if output:
+  while True:
+      output = process.stdout.readline()
+      if process.poll() is not None:
+          break
+      if output:
+          if verbose:
               print(output.strip())
   rc = process.poll()
   print('Return code: ' + str(rc))
@@ -142,12 +142,12 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
-    if verbose:
-        while True:
-            output = process.stdout.readline()
-            if process.poll() is not None:
-                break
-            if output:
+    while True:
+        output = process.stdout.readline()
+        if process.poll() is not None:
+            break
+        if output:
+            if verbose:
                 print(output.strip())
     rc = process.poll()
     print('Return code: ' + str(rc))
@@ -315,12 +315,12 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
-    if verbose:
-        while True:
-            output = process.stdout.readline()
-            if process.poll() is not None:
-                break
-            if output:
+    while True:
+        output = process.stdout.readline()
+        if process.poll() is not None:
+            break
+        if output:
+            if verbose:
                 print(output.strip())
     rc = process.poll()
     print('Return code: ' + str(rc))
@@ -367,12 +367,12 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
-    if verbose:
-        while True:
-            output = process.stdout.readline()
-            if process.poll() is not None:
-                break
-            if output:
+    while True:
+        output = process.stdout.readline()
+        if process.poll() is not None:
+            break
+        if output:
+            if verbose:
                 print(output.strip())
     rc = process.poll()
     print('Return code: ' + str(rc))

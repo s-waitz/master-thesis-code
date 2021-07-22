@@ -288,7 +288,7 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             embeddings=embeddings)  
 
         # new model in each iteration
-        model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
+        #model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
         
         # new optimizer in each iteration
         optimizer = dm.optim.Optimizer(lr_decay=lr_decay)
