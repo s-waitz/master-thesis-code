@@ -9,7 +9,7 @@ import os.path
 
 from sklearn.metrics import precision_recall_fscore_support
 
-def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, split_validation=False, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
+def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, split_validation=False, keep_model=True, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, ignore_columns=('source_id','target_id'), file_path='', data_augmentation=False, high_conf_to_ls=False, da_threshold=0, attr_summarizer='rnn', attr_comparator='abs-diff', embeddings='fasttext.en.bin', epochs=20, batch_size=20, lr_decay=0.8, embeddings_cache_path='~/.vector_cache'):
     
     if transfer_learning_dataset != None:
         init_method='Transfer Learning'
@@ -29,9 +29,7 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
 
         save_results_file = save_results_path + experiment_name + '_results.csv'
         
-        path_al_model = save_results_path + experiment_name + '_al_model.pth'
-            
-        path_tl_model = save_results_path + experiment_name + '_tl_model.pth'
+        path_model = save_results_path + experiment_name + '_model.pth'
 
         if os.path.isfile(save_results_file):
             # increase iterator if file already exists
@@ -82,7 +80,7 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
                 validation_tl,
                 epochs=epochs,
                 batch_size=batch_size,
-                best_save_path=path_tl_model,
+                best_save_path=path_model,
                 pos_neg_ratio=pn_ratio_tl)
 
         else:
@@ -133,13 +131,13 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
                 random_validation_set,
                 epochs=epochs,
                 batch_size=batch_size,
-                best_save_path='init_model.pth',
+                best_save_path=path_model,
                 pos_neg_ratio=pn_ratio_init)
 
         results_al = active_learning(train_data, validation_data, test_data, init_method, random_sample, train_data_tl,
             include_tl_data, tl_weights, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation,
-            high_conf_to_ls, da_threshold, epochs, batch_size, lr_decay, embeddings, path_al_model,
-            attr_summarizer, attr_comparator, split_validation)
+            high_conf_to_ls, da_threshold, epochs, batch_size, lr_decay, embeddings, path_model,
+            attr_summarizer, attr_comparator, split_validation, keep_model)
 
         if run == 1:
             results = pd.DataFrame()
@@ -148,6 +146,8 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
             results['Dataset']=dataset
             results['Initialization Method']=init_method
             results['Transfer Learning Dataset']=transfer_learning_dataset
+            results['Split Validation']=split_validation
+            results['Keep Model']=keep_model
             results['AL Runs']=al_iterations
             results['Sampling Size']=sampling_size
             results['Attribute Summarizer']=attr_summarizer
@@ -159,6 +159,8 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
             results['Data Augmentation']=data_augmentation
             results['High.Conf.LS']=high_conf_to_ls
             results['DA Threshold']=da_threshold
+            results['Include Source Data']=include_tl_data
+
             if include_tl_data:
                 results['sample weights'] = results_al['sample weights']
 
@@ -209,7 +211,7 @@ def run_pl(dataset, save_results_file, train_size=None, ignore_columns=('source_
         # select samples
         train_data = pd.read_csv(file_path + dataset + '_train').sample(n=train_size, weights=None, axis=None)
         validation_data = pd.read_csv(file_path + dataset + '_validation').sample(n=int(train_size/3), weights=None, axis=None)
-        test_data = pd.read_csv(file_path + dataset + '_test').sample(n=int(train_size/3), weights=None, axis=None)
+        test_data = pd.read_csv(file_path + dataset + '_test')#.sample(n=int(train_size/3), weights=None, axis=None)
         
         # rewrite samples to csv
         train_data.to_csv(dataset + '_train', index=False)

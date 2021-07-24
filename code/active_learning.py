@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 import deepmatcher as dm
 
-def active_learning(train_data, validation_data, test_data, init_method, random_sample, train_data_tl, include_tl_data, tl_weights, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator, split_validation):
+def active_learning(train_data, validation_data, test_data, init_method, random_sample, train_data_tl, include_tl_data, tl_weights, al_iterations, sampling_size, model, ignore_columns, file_path, data_augmentation, high_conf_to_ls, da_threshold, train_epochs, train_batch_size, lr_decay, embeddings, path_al_model, attr_summarizer, attr_comparator, split_validation, keep_model):
     """    
         Args:
         train_data (pd.DataFrame): ...
@@ -156,14 +156,16 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
         print('low_conf_pairs_false ' + str(low_conf_pairs_false.shape[0]))
         
         # Label these pairs with oracle and add them to labeled set
+        labeled_set_new = oracle[oracle['id'].isin(low_conf_pairs_true.index.tolist())]
+        labeled_set_new= labeled_set_new.append(oracle[oracle['id'].isin(low_conf_pairs_false.index.tolist())])
+        
         if labeled_set_raw is not None:
-            labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_true.index.tolist())])
-            labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_false.index.tolist())])
+            labeled_set_raw = labeled_set_raw.append(labeled_set_new)
         else:
-            labeled_set_raw = oracle[oracle['id'].isin(low_conf_pairs_true.index.tolist())]
-            labeled_set_raw = labeled_set_raw.append(oracle[oracle['id'].isin(low_conf_pairs_false.index.tolist())])
+            labeled_set_raw = labeled_set_new
             
         print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
+        print('labeled_set_new ' + str(labeled_set_new.shape[0]))
         number_labeled_examples += low_conf_pairs_true.shape[0] + low_conf_pairs_false.shape[0]
 
         if data_augmentation:
@@ -209,10 +211,13 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             labeled_set_temp = labeled_set_raw
 
         #remove labeled pairs from unlabeled pool
-        pool_data = pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
+        #pool_data =
+        #pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
+        pool_data = pool_data[~pool_data['id'].isin(labeled_set_new['id'].tolist())]
         
         # calculate positive negative ratio
         pn_ratio = round_int((labeled_set_temp['label'].shape[0] - labeled_set_temp['label'].sum()) / labeled_set_temp['label'].sum())
+
         print('Positve Negative Ratio: ' + str(pn_ratio))
         if pn_ratio == 0:
             pn_ratio = 1
@@ -278,17 +283,20 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             path='',
             train='labeled_set',
             validation='validation_set',
-            test='test_set', 
+            test='test_set',
             ignore_columns=ignore_columns,
             left_prefix='left_',
             right_prefix='right_',
             label_attr='label',
             id_attr='id',
             cache=None,
-            embeddings=embeddings)  
+            embeddings=embeddings)
 
         # new model in each iteration
-        #model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
+        if keep_model == False:
+            model = dm.MatchingModel(attr_summarizer=attr_summarizer, attr_comparator=attr_comparator)
+        else:
+            model._reset_embeddings(labeled_set.vocabs)
         
         # new optimizer in each iteration
         optimizer = dm.optim.Optimizer(lr_decay=lr_decay)
@@ -307,6 +315,7 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
         print("Size labeled set " + str(labeled_set_raw.shape[0]))
         print("Size unlabeled pool " + str(pool_data.shape[0]))
         print("Size labeled set temp " + str(labeled_set_temp.shape[0]))
+        print("Size labeled set new " + str(labeled_set_new.shape[0]))
         if split_validation == True:
             print("Size validation set temp " + str(validation_set_temp.shape[0]))
 
