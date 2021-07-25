@@ -11,7 +11,7 @@ import glob
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, random_sample, al_iterations, sampling_size, train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su, verbose):
+def active_learning_ditto(task, random_sample, al_iterations, sampling_size, train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su, verbose, keep_model):
 
   model = str(task) + '.pt'
   
@@ -70,7 +70,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     output_path+task+'_test_prediction.jsonl', learning_model, max_len)
 
   if dk:
-    cmd += ' --dk general'
+    cmd += ' --dk %s' % dk
   if su:
     cmd += ' --summarize'  
 
@@ -134,7 +134,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
       input_path+task+'_unlabeled_pool.txt',
       output_path+task+'_prediction.jsonl', learning_model, max_len)
     if dk:
-        cmd += ' --dk general'
+        cmd += ' --dk %s' % dk
     if su:
         cmd += ' --summarize'  
     #os.system(cmd)
@@ -264,10 +264,13 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     to_ditto_format('temp/'+task+'_unlabeled_pool', input_path+task+'_unlabeled_pool.txt')
 
     # Delete all models
-    cmd = 'rm checkpoints/%s' % (model)
-    os.system(cmd)
     cmd = 'rm *%s*.pt' % (task)
     os.system(cmd)
+
+    if keep_model == False:
+      # Delete all models
+      cmd = 'rm checkpoints/%s' % (model)
+      os.system(cmd)
 
     # Delete files from last run
     files_su = glob.glob(labeled_set_path+task+'*su*')
@@ -296,10 +299,12 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
       --run_id %d \
       --save_model""" % (task, batch_size, max_len, learning_rate, epochs,
       learning_model, i)
+    if keep_model:
+      cmd += ' --bert_path checkpoints/%s' % model
     if da:
       cmd += ' --da %s' % da
     if dk:
-      cmd += ' --dk general'
+      cmd += ' --dk %s' % dk
     if su:
       cmd += ' --summarize'
     if balance:
@@ -336,6 +341,8 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     os.system(cmd)
 
     # Pick a checkpoint, rename it
+    cmd = 'rm checkpoints/%s' % (model)
+    os.system(cmd)
     cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)
     os.system(cmd)
 
@@ -358,7 +365,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
       output_path+task+'_test_prediction.jsonl', learning_model, max_len)
 
     if dk:
-      cmd += ' --dk general'
+      cmd += ' --dk %s' % dk
     if su:
       cmd += ' --summarize'  
 

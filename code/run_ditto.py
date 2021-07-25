@@ -17,7 +17,7 @@ from collections import OrderedDict
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
 
-def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, balance=False, da='del', dk=True, su=False, verbose=False):
+def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, keep_model=True, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, balance=False, da='del', dk='general', su=False, verbose=False):
 
     # Delete files from last run
     files_su = glob.glob(labeled_set_path+task+'*su*')
@@ -104,7 +104,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             if da:
                 cmd += ' --da %s' % da
             if dk:
-                cmd += ' --dk general'
+                cmd += ' --dk %s' % dk
             if su:
                 cmd += ' --summarize'
             if balance:
@@ -186,7 +186,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             if da:
                 cmd += ' --da %s' % da
             if dk:
-                cmd += ' --dk general'
+                cmd += ' --dk %s' % dk
             if su:
                 cmd += ' --summarize'
             if balance:
@@ -216,7 +216,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
                                            input_path, output_path, data_augmentation, 
                                            high_conf_to_ls, da_threshold, learning_model, 
                                            learning_rate, max_len, batch_size, epochs,
-                                           balance, da, dk, su, verbose)
+                                           balance, da, dk, su, verbose, keep_model)
         if run == 1:
             results = pd.DataFrame()
             # build final results dataframe and save results
@@ -224,6 +224,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
             results['Task']=task
             results['Initialization Method']=init_method
             results['Transfer Learning Dataset']=transfer_learning_dataset
+            results['Keep Model']=keep_model
             results['AL Runs']=al_iterations
             results['Sampling Size']=sampling_size
             results['Learning Model']=learning_model
@@ -279,7 +280,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
 
 
 
-def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False, da='del', dk=True, su=True, verbose=False):
+def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train_size=None, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs=2, balance=False, da='del', dk='general', su=True, verbose=False):
     
     # Delete files from last run
     files_su = glob.glob(ditto_data_path+task+'*su*')
@@ -333,7 +334,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
     if da:
         cmd += ' --da %s' % da
     if dk:
-        cmd += ' --dk general'
+        cmd += ' --dk %s' % dk
     if su:
         cmd += ' --summarize'        
     if balance:
@@ -380,7 +381,7 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
       --checkpoint_path checkpoints/""" % (task, input_path+task+'_test.txt',
       output_path+task+'_test_prediction.jsonl', learning_model, max_len)
     if dk:
-        cmd += ' --dk general'
+        cmd += ' --dk %s' % dk
     if su:
         cmd += ' --summarize'  
     #os.system(cmd)
