@@ -1,0 +1,25 @@
+Dataset;Method;Date;Train Size;F1;Precision;Recall;Runtime;Attr.Summarizer;Attr.Comparator;Embeddings;Epochs;Batch Size;Pos.Neg.Ratio
+wdc_phones;Passive Learing;24.07.2021;;0.916;0.875;0.961;381.671;rnn;abs-diff;fasttext.en.bin;20;20;8
+wdc_phones;Passive Learing;24.07.2021;;0.916;0.875;0.961;375.764;rnn;abs-diff;fasttext.en.bin;20;20;8
+wdc_phones;Passive Learing;24.07.2021;;0.933;0.907;0.961;375.452;rnn;abs-diff;fasttext.en.bin;20;20;8
+wdc_headphones;Passive Learing;24.07.2021;;0.917;0.863;0.978;276.507;rnn;abs-diff;fasttext.en.bin;20;20;5
+wdc_headphones;Passive Learing;24.07.2021;;0.926;0.88;0.978;277.656;rnn;abs-diff;fasttext.en.bin;20;20;5
+wdc_headphones;Passive Learing;24.07.2021;;0.898;0.83;0.978;279.742;rnn;abs-diff;fasttext.en.bin;20;20;5
+abt_buy;Passive Learing;25.07.2021;;0.735;0.694;0.782;692.466;hybrid;abs-diff;fasttext.en.bin;20;20;6
+abt_buy;Passive Learing;25.07.2021;;0.664;0.57;0.795;694.372;hybrid;abs-diff;fasttext.en.bin;20;20;6
+abt_buy;Passive Learing;25.07.2021;;0.602;0.613;0.591;696.45;hybrid;abs-diff;fasttext.en.bin;20;20;6
+amazon_google;Passive Learing;25.07.2021;;0.766;0.749;0.784;1.447.117;hybrid;abs-diff;fasttext.en.bin;20;20;6
+amazon_google;Passive Learing;25.07.2021;;0.71;0.655;0.776;1.439.585;hybrid;abs-diff;fasttext.en.bin;20;20;6
+amazon_google;Passive Learing;25.07.2021;;0.722;0.733;0.71;1.444.807;hybrid;abs-diff;fasttext.en.bin;20;20;6
+dbpedia_viaf;Passive Learing;25.07.2021;;0.955;0.942;0.969;1.383.905;rnn;abs-diff;fasttext.en.bin;20;20;5
+dbpedia_viaf;Passive Learing;25.07.2021;;0.957;0.942;0.972;1399.02;rnn;abs-diff;fasttext.en.bin;20;20;5
+dbpedia_viaf;Passive Learing;25.07.2021;;0.949;0.928;0.972;1.393.105;rnn;abs-diff;fasttext.en.bin;20;20;5
+dbpedia_dnb;Passive Learing;25.07.2021;;0.919;0.883;0.958;623.738;rnn;abs-diff;fasttext.en.bin;20;20;5
+dbpedia_dnb;Passive Learing;25.07.2021;;0.92;0.952;0.89;623.856;rnn;abs-diff;fasttext.en.bin;20;20;5
+dbpedia_dnb;Passive Learing;25.07.2021;;0.921;0.898;0.945;617.948;rnn;abs-diff;fasttext.en.bin;20;20;5
+cameras;Passive Learing;25.07.2021;;0.755;0.782;0.73;174.109;rnn;abs-diff;fasttext.en.bin;20;20;4
+cameras;Passive Learing;25.07.2021;;0.725;0.631;0.853;170.513;rnn;abs-diff;fasttext.en.bin;20;20;4
+cameras;Passive Learing;25.07.2021;;0.758;0.764;0.753;173.2;rnn;abs-diff;fasttext.en.bin;20;20;4
+watches;Passive Learing;25.07.2021;;0.914;0.908;0.92;727.137;rnn;abs-diff;fasttext.en.bin;20;20;4
+watches;Passive Learing;25.07.2021;;0.934;0.928;0.94;729.224;rnn;abs-diff;fasttext.en.bin;20;20;4
+watches;Passive Learing;25.07.2021;;0.902;0.9;0.903;728.552;rnn;abs-diff;fasttext.en.bin;20;20;4

@@ -209,9 +209,16 @@ def run_pl(dataset, save_results_file, train_size=None, ignore_columns=('source_
 
     if train_size:
         # select samples
-        train_data = pd.read_csv(file_path + dataset + '_train').sample(n=train_size, weights=None, axis=None)
-        validation_data = pd.read_csv(file_path + dataset + '_validation').sample(n=int(train_size/3), weights=None, axis=None)
-        test_data = pd.read_csv(file_path + dataset + '_test')#.sample(n=int(train_size/3), weights=None, axis=None)
+        train_data = pd.read_csv(file_path + dataset + '_train')
+        validation_data = pd.read_csv(file_path + dataset + '_validation')
+        all_data = pd.concat([train_data, validation_data]).reset_index(drop=True)
+        sample_data = all_data.sample(n=train_size, weights=None, axis=None)
+        y = sample_data['label']
+        train_data, validation_data, _, _ = train_test_split(sample_data, y,
+                                            stratify=y, 
+                                            test_size=0.25)
+
+        test_data = pd.read_csv(file_path + dataset + '_test')
         
         # rewrite samples to csv
         train_data.to_csv(dataset + '_train', index=False)
