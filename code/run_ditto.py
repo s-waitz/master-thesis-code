@@ -298,9 +298,16 @@ def run_pl_ditto(task, save_results_file, base_data_path, ditto_data_path, train
 
     if train_size:
         # select samples
-        train_data = pd.read_csv(base_data_path + task + '_train').sample(n=train_size, weights=None, axis=None)
-        validation_data = pd.read_csv(base_data_path + task + '_validation').sample(n=int(train_size/3), weights=None, axis=None)
-        test_data = pd.read_csv(base_data_path + task + '_test').sample(n=int(train_size/3), weights=None, axis=None)
+        train_data = pd.read_csv(base_data_path + task + '_train')
+        validation_data = pd.read_csv(base_data_path + task + '_validation')
+        all_data = pd.concat([train_data, validation_data]).reset_index(drop=True)
+        sample_data = all_data.sample(n=train_size, weights=None, axis=None)
+        y = sample_data['label']
+        train_data, validation_data, _, _ = train_test_split(sample_data, y,
+                                            stratify=y, 
+                                            test_size=0.25)
+        
+        test_data = pd.read_csv(base_data_path + task + '_test')
     
     else:
         train_data = pd.read_csv(base_data_path + task + '_train')
