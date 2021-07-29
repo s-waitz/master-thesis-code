@@ -175,6 +175,7 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
         labeled_set_raw = labeled_set_raw.append(oracle[oracle.index.isin(low_conf_pairs_false.index.tolist())])
 
     labeled_set_raw = labeled_set_raw.drop_duplicates()
+    #test
     print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
     print('index pairs true: ' + str(low_conf_pairs_true.index.tolist()))
     print('index pairs false: ' + str(low_conf_pairs_false.index.tolist()))
