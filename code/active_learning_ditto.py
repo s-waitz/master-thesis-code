@@ -153,9 +153,12 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     print('Return code: ' + str(rc))
 
     predictions = pd.read_json(output_path+task+'_prediction.jsonl', lines=True)
+    
+    pool_with_predictions = pool_data.copy()
+    pool_with_predictions[['match','match_confidence']] = predictions[['match','match_confidence']]
 
-    predictions_true = predictions[predictions['match']==1]
-    predictions_false = predictions[predictions['match']==0]
+    predictions_true = pool_with_predictions[pool_with_predictions['match']==1]
+    predictions_false = pool_with_predictions[pool_with_predictions['match']==0]
 
     # Select k most uncertain pairs based on match_confidence for active learning
     low_conf_pairs_true = predictions_true['match_confidence'].nsmallest(int(sampling_size/2))
@@ -177,6 +180,14 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     print('index pairs false: ' + str(low_conf_pairs_false.index.tolist()))
     print('index labeled set raw: ' + str(labeled_set_raw.index.tolist()))
     number_labeled_examples += low_conf_pairs_true.shape[0] + low_conf_pairs_false.shape[0]
+    
+    # TEST: save all files
+    #labeled_set_raw.to_csv("labeled_set_" + str(i), index=True)
+    #low_conf_pairs_true.to_csv("low_conf_pairs_true_" + str(i), index=True)
+    #low_conf_pairs_false.to_csv("low_conf_pairs_false_" + str(i), index=True)
+    #predictions.to_csv("predictions_" + str(i), index=True)
+    #pool_data.to_csv("pool_data_" + str(i), index=True)
+    #oracle.to_csv("oracle_" + str(i), index=True)
 
     # data augmentation
     if data_augmentation:
@@ -253,9 +264,6 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
 
     to_ditto_format(labeled_set_temp, labeled_set_path+task+'_train.txt')
     to_ditto_format(validation_set_temp, labeled_set_path+task+'_validation.txt')
-
-    # TEST: save labeled set
-    labeled_set_temp.to_csv("labeled_set_" + str(i), index=False)
 
     # Remove labeled pairs from unlabeled pool    
     pool_data = pool_data[~pool_data.index.isin(labeled_set_raw.index.tolist())]

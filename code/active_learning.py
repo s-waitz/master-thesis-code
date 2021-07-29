@@ -86,7 +86,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
 
 
     # Save results for first prediction with initialized model
-    # todo
     prec, recall, fscore, _ = precision_recall_fscore_support(
         test_data['label'],
         np.where(model.run_prediction(test_set)['match_score'] >= 0.5, 1, 0),
@@ -110,12 +109,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
         print(ignore_columns)
 
         # process unlabeled pool for deepmatcher
-        #pool_data.to_csv('unlabeled_pool', index=False)
-
-        #unlabeled_pool = dm.data.process_unlabeled(
-        #    path='unlabeled_pool',
-        #    trained_model=model,
-        #    ignore_columns=ignore_columns)
         pool_data.to_csv('train_set', index=False)
         train_set = dm.data.process(
             path='',
@@ -211,8 +204,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             labeled_set_temp = labeled_set_raw
 
         #remove labeled pairs from unlabeled pool
-        #pool_data =
-        #pool_data[~pool_data['id'].isin(labeled_set_raw['id'].tolist())]
         pool_data = pool_data[~pool_data['id'].isin(labeled_set_new['id'].tolist())]
         
         # calculate positive negative ratio
@@ -320,7 +311,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             print("Size validation set temp " + str(validation_set_temp.shape[0]))
 
         # Save results
-        # todo
         prec, recall, fscore, _ = precision_recall_fscore_support(
             test_data['label'],
             np.where(model.run_prediction(test_set)['match_score'] >= 0.5, 1, 0),
