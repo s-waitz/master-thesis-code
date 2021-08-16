@@ -1,0 +1,25 @@
+Task;Method;Date;Train Size;Learning Model;Learning Rate;Max Length;Epochs;Batch Size;DA;DK;SU;Balance;Max Lenght;Run 1: f1;Run 1: precision;Run 1: recall;Run 2: f1;Run 2: precision;Run 2: recall;Run 3: f1;Run 3: precision;Run 3: recall;F1 Mean;F1 Std;Precision Mean;Precision Std;Recall Mean;Recall Std
+abt_buy;Passive Learing;30.07.2021;1000.0;roberta;3,00E-05;;50;32;span_shuffle;product;False;False;256.0;0.79;0.755;0.827;0.851;0.834;0.868;0.848;0.871;0.827;0.83;0.034;0.82;0.059;0.841;0.024
+abt_buy;Passive Learing;30.07.2021;2000.0;roberta;3,00E+11;;50;32;span_shuffle;product;False;False;256.0;0.914;0.938;0.89;0.884;0.885;0.882;0.864;0.951;0.79;0.887;0.025;0.925;0.035;0.854;0.056
+abt_buy;Passive Learing;28.07.2021;;roberta;3,00E+11;;50;32;span_shuffle;product;False;False;256.0;0.959;0.959;0.959;0.961;0.977;0.945;0.952;0.963;0.941;0.957;0.005;0.966;0.009;0.948;0.009
+amazon_google;Passive Learing;30.07.2021;1000.0;roberta;3,00E-05;;50;32;span_del;product;False;False;256.0;0.747;0.741;0.753;0.743;0.802;0.691;0.674;0.758;0.606;0.721;0.041;0.767;0.031;0.683;0.074
+amazon_google;Passive Learing;30.07.2021;2000.0;roberta;3,00E+11;;50;32;span_del;product;False;False;256.0;0.807;0.867;0.757;0.794;0.816;0.772;0.802;0.819;0.787;0.801;0.007;0.834;0.029;0.772;0.015
+amazon_google;Passive Learing;28.07.2021;;roberta;3,00E-05;;50;32;span_del;product;False;False;256.0;0.827;0.835;0.819;0.802;0.833;0.772;0.835;0.849;0.822;0.821;0.017;0.839;0.009;0.804;0.028
+cameras;Passive Learing;29.07.2021;1000.0;roberta;3,00E-05;;20;32;span_del;product;False;False;256.0;0.81;0.732;0.91;0.81;0.732;0.91;0.804;0.782;0.827;0.808;0.003;0.749;0.029;0.882;0.048
+cameras;Passive Learing;29.07.2021;2000.0;roberta;3,00E-05;;20;32;span_del;product;False;False;256.0;0.87;0.86;0.88;0.833;0.819;0.847;0.844;0.832;0.857;0.849;0.019;0.837;0.021;0.861;0.017
+cameras;Passive Learing;28.07.2021;;roberta;3,00E-05;;20;32;span_del;product;False;False;256.0;0.908;0.912;0.903;0.91;0.919;0.903;0.886;0.831;0.95;0.901;0.013;0.887;0.049;0.919;0.027
+dbpedia_dnb;Passive Learing;30.07.2021;1000.0;roberta;3,00E-05;;20;32;span_del;general;False;False;256.0;0.965;0.973;0.957;0.956;0.932;0.981;0.971;0.968;0.974;0.964;0.008;0.958;0.022;0.971;0.012
+dbpedia_dnb;Passive Learing;29.07.2021;2000.0;roberta;3,00E-05;;20;32;span_del;general;False;False;256.0;0.972;0.959;0.985;0.978;0.983;0.974;0.982;0.992;0.972;0.977;0.005;0.978;0.017;0.977;0.007
+dbpedia_dnb;Passive Learing;28.07.2021;;roberta;3,00E-05;;20;32;span_del;general;False;False;256.0;0.988;0.996;0.979;0.989;0.991;0.987;0.99;0.998;0.981;0.989;0.001;0.995;0.004;0.982;0.004
+dbpedia_viaf;Passive Learing;29.07.2021;1000.0;roberta;3,00E+11;;20;32;span_del;general;False;False;256.0;0.952;1.0;0.909;0.969;0.97;0.969;0.93;0.932;0.929;0.95;0.02;0.967;0.034;0.936;0.031
+dbpedia_viaf;Passive Learing;29.07.2021;2000.0;roberta;3,00E-05;;20;32;span_del;general;False;False;256.0;0.985;0.995;0.975;0.93;0.938;0.922;0.977;0.971;0.984;0.964;0.03;0.968;0.029;0.96;0.034
+dbpedia_viaf;Passive Learing;28.07.2021;;roberta;3,00E+11;;20;32;span_del;general;False;False;256.0;0.993;1.0;0.986;0.992;0.995;0.989;0.992;0.995;0.989;0.992;0.001;0.997;0.003;0.988;0.002
+watches;Passive Learing;29.07.2021;1000.0;roberta;3,00E-05;;20;32;span_del;product;False;False;256.0;0.829;0.81;0.85;0.74;0.67;0.823;0.679;0.625;0.743;0.749;0.075;0.702;0.096;0.805;0.056
+watches;Passive Learing;29.07.2021;2000.0;roberta;3,00E+11;;20;32;span_del;product;False;False;256.0;0.87;0.848;0.893;0.882;0.902;0.863;0.84;0.877;0.807;0.864;0.022;0.876;0.027;0.854;0.044
+watches;Passive Learing;28.07.2021;;roberta;3,00E+11;;20;32;span_del;product;False;False;256.0;0.968;0.967;0.97;0.968;0.97;0.967;0.972;0.973;0.97;0.969;0.002;0.97;0.003;0.969;0.002
+wdc_headphones;Passive Learing;30.07.2021;100.0;roberta;3,00E-05;;80;32;span_del;product;False;False;256.0;0.915;0.878;0.956;0.955;0.977;0.932;0.269;0.155;1.0;0.713;0.385;0.67;0.449;0.963;0.034
+wdc_headphones;Passive Learing;30.07.2021;200.0;roberta;3,00E+11;;80;32;span_del;product;False;False;256.0;0.83;0.721;0.978;0.907;0.951;0.867;0.902;1.0;0.822;0.88;0.043;0.891;0.149;0.889;0.08
+wdc_headphones;Passive Learing;28.07.2021;;roberta;3,00E+11;;80;32;span_del;product;False;False;256.0;0.978;0.978;0.978;0.945;0.935;0.956;0.967;0.957;0.978;0.963;0.017;0.957;0.022;0.971;0.013
+wdc_phones;Passive Learing;30.07.2021;100.0;roberta;3,00E-05;;80;32;span_del;product;False;False;256.0;0.571;0.727;0.471;0.38;0.387;0.373;0.38;0.388;0.373;0.444;0.11;0.501;0.196;0.406;0.057
+wdc_phones;Passive Learing;30.07.2021;200.0;roberta;3,00E+11;;80;32;span_del;product;False;False;256.0;0.698;0.857;0.588;0.763;0.672;0.882;0.571;0.727;0.471;0.677;0.098;0.752;0.095;0.647;0.212
+wdc_phones;Passive Learing;28.07.2021;;roberta;3,00E-05;;80;32;span_del;product;False;False;256.0;0.913;0.904;0.922;0.904;0.887;0.922;0.94;0.959;0.922;0.919;0.019;0.917;0.038;0.922;0.0

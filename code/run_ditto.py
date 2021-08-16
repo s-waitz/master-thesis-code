@@ -17,7 +17,7 @@ from collections import OrderedDict
 from ditto_helper import to_ditto_format, to_jsonl
 from active_learning_ditto import active_learning_ditto
 
-def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, keep_model=True, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, balance=False, da='del', dk='general', su=False, verbose=False):
+def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path, base_data_path, labeled_set_path, keep_model=True, transfer_learning_dataset=None, include_tl_data=False, tl_weights=None, init_random_sample=False, data_augmentation=False, high_conf_to_ls=False, da_threshold=0, input_path='input/', output_path='output/', learning_model='roberta', learning_rate='3e-5', max_len=256, batch_size=32, epochs_tl=None, epochs=40, reduce_epochs=False, balance=False, da='del', dk='general', su=False, verbose=False):
 
     # Delete files from last run
     files_su = glob.glob(labeled_set_path+task+'*su*')
@@ -215,7 +215,7 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
                                            train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path,
                                            input_path, output_path, data_augmentation, 
                                            high_conf_to_ls, da_threshold, learning_model, 
-                                           learning_rate, max_len, batch_size, epochs,
+                                           learning_rate, max_len, batch_size, epochs, reduce_epochs,
                                            balance, da, dk, su, verbose, keep_model)
         if run == 1:
             results = pd.DataFrame()

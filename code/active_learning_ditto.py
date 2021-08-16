@@ -11,7 +11,7 @@ import glob
 
 from ditto_helper import to_ditto_format, to_jsonl
 
-def active_learning_ditto(task, random_sample, al_iterations, sampling_size, train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, balance, da, dk, su, verbose, keep_model):
+def active_learning_ditto(task, random_sample, al_iterations, sampling_size, train_data_tl, include_tl_data, tl_weights, base_data_path, labeled_set_path, input_path, output_path, data_augmentation, high_conf_to_ls, da_threshold, learning_model, learning_rate, max_len, batch_size, epochs, reduce_epochs, balance, da, dk, su, verbose, keep_model):
 
   model = str(task) + '.pt'
   
@@ -175,7 +175,6 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
         labeled_set_raw = labeled_set_raw.append(oracle[oracle.index.isin(low_conf_pairs_false.index.tolist())])
 
     labeled_set_raw = labeled_set_raw.drop_duplicates()
-    #test
     print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
     print('index pairs true: ' + str(low_conf_pairs_true.index.tolist()))
     print('index pairs false: ' + str(low_conf_pairs_false.index.tolist()))
@@ -288,6 +287,11 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     files_to_delete = set(files_to_delete)
     for file in files_to_delete:
         os.remove(file)
+
+    # reduce epochs
+    if reduce_epochs:
+      if number_labeled_examples >= reduce_epochs[0]:
+        epochs = reduce_epochs[1]
 
     # Train model on labeled set
 
