@@ -163,6 +163,14 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     # Select k most uncertain pairs based on match_confidence for active learning
     low_conf_pairs_true = predictions_true['match_confidence'].nsmallest(int(sampling_size/2))
     low_conf_pairs_false = predictions_false['match_confidence'].nsmallest(int(sampling_size/2))
+
+    # if now true pairs add false pairs instead
+    if low_conf_pairs_true.shape[0] == 0:
+        low_conf_pairs_false = predictions_false['match_confidence'].nsmallest(int(sampling_size))
+    # if now false pairs add true pairs instead
+    if low_conf_pairs_false.shape[0] == 0:
+        low_conf_pairs_true = predictions_true['match_confidence'].nsmallest(int(sampling_size))
+            
     print('low_conf_pairs_true ' + str(low_conf_pairs_true.shape[0]))
     print('low_conf_pairs_false ' + str(low_conf_pairs_false.shape[0]))
 
