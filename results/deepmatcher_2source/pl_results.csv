@@ -1,9 +1,0 @@
-Dataset,Method,Date,Train Size,F1,Precision,Recall,Runtime,Attr.Summarizer,Attr.Comparator,Embeddings,Epochs,Batch Size,Pos.Neg.Ratio
-wdc_phones,Passive Learing,28.05.2021,,0.889,0.8420000000000001,0.941,46.080.400.000.000.000,rnn,abs-diff,fasttext.en.bin,20,20,8
-wdc_headphones,Passive Learing,28.05.2021,,0.871,0.7859999999999999,0.978,3.326.880.000.000.000,rnn,abs-diff,fasttext.en.bin,20,20,5
-amazon_google,Passive Learing,28.05.2021,,0.778,0.747,0.8109999999999999,7.855.934,hybrid,abs-diff,fasttext.en.bin,20,20,6
-abt_buy,Passive Learing,28.05.2021,,0.731,0.716,0.745,7.717.560.000.000.000,hybrid,abs-diff,fasttext.en.bin,20,20,6
-dbpedia_viaf,Passive Learing,28.05.2021,,0.9520000000000001,0.9420000000000001,0.963,1.280.498,rnn,abs-diff,fasttext.en.bin,20,20,5
-dbpedia_dnb,Passive Learing,28.05.2021,,0.944,0.924,0.964,563.635,rnn,abs-diff,fasttext.en.bin,20,20,5
-cameras (medium),Passive Learning,17.05.2021,,0.734,0.685,0.79,166.284,rnn,abs-diff,fasttext.en.bin,20,16,5
-watches (large),Passive Learning,17.05.2021,,0.915,0.897,0.933,711.026,rnn,abs-diff,fasttext.en.bin,20,16,5

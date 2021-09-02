@@ -1,0 +1,22 @@
+labeled set size,Task,Initialization Method,Transfer Learning Dataset,Keep Model,AL Runs,Sampling Size,Learning Model,Learning Rate,Max Length,Epochs,Batch Size,Data Augmentation,High.Conf.LS,DA Threshold,DA,DK,SU,Run 1: f1,Run 1: precision,Run 1: recall,Run 2: f1,Run 2: precision,Run 2: recall,Run 3: f1,Run 3: precision,Run 3: recall,F1 Mean,F1 Std,Precision Mean,Precision Std,Recall Mean,Recall Std
+100,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.122,0.132,0.113,0.976,0.981,0.972,0.98,1.0,0.96,0.693,0.404,0.704,0.405,0.682,0.402
+200,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.672,0.552,0.86,0.893,0.86,0.928,0.896,0.825,0.981,0.82,0.105,0.746,0.138,0.923,0.05
+300,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.91,0.87,0.953,0.946,0.934,0.958,0.93,0.916,0.945,0.929,0.015,0.907,0.027,0.952,0.005
+400,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.864,0.785,0.96,0.94,0.905,0.977,0.958,0.935,0.981,0.921,0.041,0.875,0.065,0.973,0.009
+500,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.887,0.831,0.951,0.948,0.921,0.975,0.944,0.948,0.94,0.926,0.028,0.9,0.05,0.955,0.015
+600,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.929,0.913,0.947,0.951,0.944,0.958,0.936,0.931,0.941,0.939,0.009,0.929,0.013,0.949,0.007
+700,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.971,0.959,0.983,0.946,0.929,0.964,0.981,0.985,0.977,0.966,0.015,0.958,0.023,0.975,0.008
+800,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.959,0.967,0.951,0.949,0.929,0.97,0.961,0.953,0.968,0.956,0.005,0.95,0.016,0.963,0.009
+900,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.958,0.96,0.957,0.937,0.928,0.947,0.969,0.963,0.975,0.955,0.013,0.95,0.016,0.96,0.012
+1000,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.946,0.909,0.985,0.963,0.955,0.972,0.953,0.972,0.934,0.954,0.007,0.945,0.027,0.964,0.022
+1100,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.961,0.953,0.968,0.956,0.94,0.974,0.977,0.985,0.97,0.965,0.009,0.959,0.019,0.971,0.002
+1200,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.927,0.881,0.977,0.976,0.983,0.97,0.97,0.975,0.964,0.958,0.022,0.946,0.046,0.97,0.005
+1300,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.965,0.959,0.972,0.952,0.936,0.968,0.957,0.943,0.972,0.958,0.005,0.946,0.01,0.971,0.002
+1400,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.984,0.989,0.979,0.977,0.97,0.983,0.97,0.964,0.975,0.977,0.006,0.974,0.011,0.979,0.003
+1500,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.961,0.947,0.975,0.957,0.93,0.985,0.955,0.924,0.989,0.958,0.002,0.934,0.01,0.983,0.006
+1600,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.973,0.981,0.966,0.981,0.983,0.979,0.981,0.988,0.974,0.978,0.004,0.984,0.003,0.973,0.005
+1700,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.975,0.975,0.975,0.973,0.97,0.975,0.978,0.972,0.985,0.975,0.002,0.972,0.002,0.978,0.005
+1800,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.967,0.961,0.974,0.964,0.971,0.957,0.97,0.981,0.96,0.967,0.002,0.971,0.008,0.964,0.007
+1900,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.956,0.943,0.97,0.964,0.95,0.977,0.959,0.935,0.985,0.96,0.003,0.943,0.006,0.977,0.006
+2000,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.968,0.957,0.979,0.968,0.97,0.966,0.97,0.99,0.951,0.969,0.001,0.972,0.014,0.965,0.011
+2100,dbpedia_dnb,Random Sample 100,,False,20,100,roberta,3e-5,256,60,20,False,False,0,span_del,general,False,0.974,0.968,0.979,0.978,0.988,0.968,0.981,0.987,0.975,0.978,0.003,0.981,0.009,0.974,0.005

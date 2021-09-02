@@ -59,8 +59,6 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
             if pn_ratio_tl == 0:
                 pn_ratio_tl = 1
             
-            print('Positve Negative Ratio TL: ' + str(pn_ratio_tl))
-            
             train_tl, validation_tl, test_tl = dm.data.process(
                 path=file_path,
                 train=transfer_learning_dataset + '_train',
@@ -107,10 +105,6 @@ def run_al(dataset, num_runs, al_iterations, sampling_size, save_results_path, s
             pn_ratio_init = round((random_train_data['label'].shape[0] - random_train_data['label'].sum()) / random_train_data['label'].sum())
             if pn_ratio_init == 0:
                 pn_ratio_init = 1
-            
-            print('Positve Negative Ratio Random Init: ' + str(pn_ratio_init))
-            print('Size Random Train Set ' + str(random_train_data.shape[0]))
-            print('Size Random Validation Set ' + str(random_validation_data.shape[0]))
 
             random_train_set, random_validation_set, _ = dm.data.process(
                 path='',

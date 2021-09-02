@@ -144,9 +144,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
         # if now false pairs add true pairs instead
         if low_conf_pairs_false.shape[0] == 0:
             low_conf_pairs_true = predictions_true['entropy'].nlargest(int(sampling_size))
-
-        print('low_conf_pairs_true ' + str(low_conf_pairs_true.shape[0]))
-        print('low_conf_pairs_false ' + str(low_conf_pairs_false.shape[0]))
         
         # Label these pairs with oracle and add them to labeled set
         labeled_set_new = oracle[oracle['id'].isin(low_conf_pairs_true.index.tolist())]
@@ -156,9 +153,7 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             labeled_set_raw = labeled_set_raw.append(labeled_set_new)
         else:
             labeled_set_raw = labeled_set_new
-            
-        print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
-        print('labeled_set_new ' + str(labeled_set_new.shape[0]))
+
         number_labeled_examples += low_conf_pairs_true.shape[0] + low_conf_pairs_false.shape[0]
 
         if data_augmentation:
@@ -172,8 +167,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
                 high_conf_pairs_true = predictions[predictions['match_score']>=da_threshold]
                 # select pairs with low probability for data augmentation
                 high_conf_pairs_false = predictions[predictions['match_score']<=(1-da_threshold)]
-                print("Data Augmentation True: " + str(high_conf_pairs_true.shape[0]))
-                print("Data Augmentation False: " + str(high_conf_pairs_false.shape[0]))
                 
             # Use prediction as label
             data_augmentation_true = pool_data[pool_data['id'].isin(high_conf_pairs_true.index.tolist())]
@@ -209,7 +202,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
         # calculate positive negative ratio
         pn_ratio = round_int((labeled_set_temp['label'].shape[0] - labeled_set_temp['label'].sum()) / labeled_set_temp['label'].sum())
 
-        print('Positve Negative Ratio: ' + str(pn_ratio))
         if pn_ratio == 0:
             pn_ratio = 1
 
@@ -251,18 +243,12 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             #create dictionary with sample weights
             sample_weights = dict(source_weights)
             sample_weights.update(target_weights)
-            print('Source Weight: ' + str(source_weight))
-            print('Target Weight: ' + str(target_weight))
 
         if include_tl_data:
-            print("Labeled set size: " + str(labeled_set_temp.shape[0]))
-            print("Labeled set size: " + str(labeled_set_temp.shape[0]))
             # TL: if source data is included
             labeled_set_temp = train_data_tl.append(labeled_set_temp)
             # reorder columns
             labeled_set_temp = labeled_set_temp[test_data.columns.tolist()]
-            print("Columns combined set: " + str(labeled_set_temp.columns))
-            print("Size combined set: " + str(labeled_set_temp.shape[0]))
 
         labeled_set_temp.to_csv('labeled_set', index=False)
 
@@ -302,13 +288,6 @@ def active_learning(train_data, validation_data, test_data, init_method, random_
             optimizer=optimizer,
             pos_neg_ratio=pn_ratio,
             sample_weights=sample_weights)
-            
-        print("Size labeled set " + str(labeled_set_raw.shape[0]))
-        print("Size unlabeled pool " + str(pool_data.shape[0]))
-        print("Size labeled set temp " + str(labeled_set_temp.shape[0]))
-        print("Size labeled set new " + str(labeled_set_new.shape[0]))
-        if split_validation == True:
-            print("Size validation set temp " + str(validation_set_temp.shape[0]))
 
         # Save results
         prec, recall, fscore, _ = precision_recall_fscore_support(

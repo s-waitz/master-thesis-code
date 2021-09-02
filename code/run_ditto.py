@@ -162,8 +162,6 @@ def run_al_ditto(task, num_runs, al_iterations, sampling_size, save_results_path
 
             to_ditto_format(random_train_data, labeled_set_path+task+'_train.txt')
             to_ditto_format(random_validation_data, labeled_set_path+task+'_validation.txt')
-            print('Size Random Train Set ' + str(random_train_data.shape[0]))
-            print('Size Random Validation Set ' + str(random_validation_data.shape[0]))
 
             # Train model on random sample
 

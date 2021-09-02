@@ -1,0 +1,22 @@
+labeled set size,Task,Initialization Method,Transfer Learning Dataset,Keep Model,AL Runs,Sampling Size,Learning Model,Learning Rate,Max Length,Epochs,Batch Size,Data Augmentation,High.Conf.LS,DA Threshold,DA,DK,SU,Run 1: f1,Run 1: precision,Run 1: recall,Run 2: f1,Run 2: precision,Run 2: recall,Run 3: f1,Run 3: precision,Run 3: recall,F1 Mean,F1 Std,Precision Mean,Precision Std,Recall Mean,Recall Std
+100,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.556,0.483,0.657,0.922,0.904,0.94,0.912,0.922,0.903,0.797,0.17,0.77,0.203,0.833,0.126
+300,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.659,0.564,0.793,0.749,0.696,0.81,0.637,0.513,0.84,0.682,0.048,0.591,0.077,0.814,0.019
+500,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.777,0.725,0.837,0.786,0.764,0.81,0.734,0.619,0.903,0.766,0.023,0.703,0.061,0.85,0.039
+700,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.801,0.707,0.923,0.81,0.771,0.853,0.787,0.728,0.857,0.799,0.009,0.735,0.027,0.878,0.032
+900,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.813,0.794,0.833,0.779,0.697,0.883,0.828,0.799,0.86,0.807,0.02,0.763,0.047,0.859,0.02
+1100,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.798,0.711,0.91,0.855,0.802,0.917,0.798,0.749,0.853,0.817,0.027,0.754,0.037,0.893,0.029
+1300,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.811,0.711,0.943,0.827,0.776,0.887,0.815,0.809,0.82,0.818,0.007,0.765,0.041,0.883,0.05
+1500,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.777,0.684,0.9,0.856,0.859,0.853,0.852,0.848,0.857,0.828,0.036,0.797,0.08,0.87,0.021
+1700,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.832,0.768,0.907,0.868,0.839,0.9,0.792,0.703,0.907,0.831,0.031,0.77,0.056,0.905,0.003
+1900,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.854,0.805,0.91,0.856,0.816,0.9,0.846,0.815,0.88,0.852,0.004,0.812,0.005,0.897,0.012
+2100,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.858,0.779,0.953,0.863,0.808,0.927,0.84,0.778,0.913,0.854,0.01,0.788,0.014,0.931,0.017
+2300,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.861,0.809,0.92,0.853,0.811,0.9,0.896,0.905,0.887,0.87,0.019,0.842,0.045,0.902,0.014
+2500,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.875,0.861,0.89,0.429,0.273,1.0,0.881,0.883,0.88,0.728,0.212,0.672,0.283,0.923,0.054
+2700,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.854,0.869,0.84,0.89,0.84,0.947,0.889,0.895,0.883,0.878,0.017,0.868,0.022,0.89,0.044
+2900,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.887,0.862,0.913,0.884,0.856,0.913,0.895,0.938,0.857,0.889,0.005,0.885,0.037,0.894,0.026
+3100,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.862,0.839,0.887,0.882,0.847,0.92,0.9,0.903,0.897,0.881,0.016,0.863,0.028,0.901,0.014
+3300,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.894,0.866,0.923,0.872,0.849,0.897,0.889,0.882,0.897,0.885,0.009,0.866,0.013,0.906,0.012
+3500,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.894,0.888,0.9,0.907,0.891,0.923,0.891,0.925,0.86,0.897,0.007,0.901,0.017,0.894,0.026
+3700,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.92,0.901,0.94,0.911,0.886,0.937,0.902,0.898,0.907,0.911,0.007,0.895,0.006,0.928,0.015
+3900,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.869,0.81,0.937,0.916,0.89,0.943,0.903,0.926,0.88,0.896,0.02,0.875,0.048,0.92,0.028
+4100,watches,Random Sample 100,,False,20,200,roberta,3e-5,256,60,20,False,False,0,span_del,product,False,0.906,0.864,0.953,0.897,0.883,0.91,0.903,0.887,0.92,0.902,0.004,0.878,0.01,0.928,0.018

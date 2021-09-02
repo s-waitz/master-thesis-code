@@ -1,5 +1,4 @@
 import os
-from numpy import TooHardError, source
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -164,15 +163,21 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     low_conf_pairs_true = predictions_true['match_confidence'].nsmallest(int(sampling_size/2))
     low_conf_pairs_false = predictions_false['match_confidence'].nsmallest(int(sampling_size/2))
 
-    # if now true pairs add false pairs instead
-    if low_conf_pairs_true.shape[0] == 0:
-        low_conf_pairs_false = predictions_false['match_confidence'].nsmallest(int(sampling_size))
-    # if now false pairs add true pairs instead
-    if low_conf_pairs_false.shape[0] == 0:
-        low_conf_pairs_true = predictions_true['match_confidence'].nsmallest(int(sampling_size))
-            
-    print('low_conf_pairs_true ' + str(low_conf_pairs_true.shape[0]))
-    print('low_conf_pairs_false ' + str(low_conf_pairs_false.shape[0]))
+    # if no true pairs add false pairs instead
+    #if low_conf_pairs_true.shape[0] == 0:
+    #  low_conf_pairs_false = predictions_false['match_confidence'].nsmallest(int(sampling_size))
+    # if no false pairs add true pairs instead
+    #if low_conf_pairs_false.shape[0] == 0:
+    #  low_conf_pairs_true = predictions_true['match_confidence'].nsmallest(int(sampling_size))
+        
+    # if not enough true pairs add false pairs instead
+    if low_conf_pairs_true.shape[0] < sampling_size/2:
+      add_to_false = sampling_size - low_conf_pairs_true.shape[0]
+      low_conf_pairs_false = predictions_false['match_confidence'].nsmallest(int(add_to_false))
+    # if not enough false pairs add true pairs instead
+    if low_conf_pairs_false.shape[0] < sampling_size/2:
+      add_to_true = sampling_size - low_conf_pairs_false.shape[0]
+      low_conf_pairs_true = predictions_true['match_confidence'].nsmallest(int(add_to_true))
 
     # Label these pairs with oracle and add them to labeled set
     if labeled_set_raw is not None:
@@ -183,10 +188,6 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
         labeled_set_raw = labeled_set_raw.append(oracle[oracle.index.isin(low_conf_pairs_false.index.tolist())])
 
     labeled_set_raw = labeled_set_raw.drop_duplicates()
-    print('labeled_set_raw ' + str(labeled_set_raw.shape[0]))
-    print('index pairs true: ' + str(low_conf_pairs_true.index.tolist()))
-    print('index pairs false: ' + str(low_conf_pairs_false.index.tolist()))
-    print('index labeled set raw: ' + str(labeled_set_raw.index.tolist()))
     number_labeled_examples += low_conf_pairs_true.shape[0] + low_conf_pairs_false.shape[0]
     
     # TEST: save all files
@@ -209,8 +210,6 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
             high_conf_pairs_true = predictions_true[predictions_true['match_confidence']>=da_threshold]
             # select pairs with low probability for data augmentation
             high_conf_pairs_false = predictions_false[predictions_false['match_confidence']>=(da_threshold)]
-            print("Data Augmentation True: " + str(high_conf_pairs_true.shape[0]))
-            print("Data Augmentation False: " + str(high_conf_pairs_false.shape[0]))
             
         # Use prediction as label #TODO
         data_augmentation_true = pool_data[pool_data.index.isin(high_conf_pairs_true.index.tolist())]
@@ -263,10 +262,8 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     if include_tl_data:
         size_source = train_data_tl.shape[0]
         size_target = labeled_set_temp.shape[0]
-        print("Labeled set size: " + str(labeled_set_temp.shape[0]))
         # TL: if source data is included
         labeled_set_temp = train_data_tl.append(labeled_set_temp)
-        print("Size combined set: " + str(labeled_set_temp.shape[0]))
 
     labeled_set_temp.to_csv('labeled_set', index=False)
 
@@ -338,6 +335,8 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
 
     #os.system(cmd)
     # invoke process
+
+
     process = subprocess.Popen(shlex.split(cmd),shell=False,stdout=subprocess.PIPE)
 
     # Poll process.stdout to show stdout live
@@ -351,20 +350,20 @@ def active_learning_ditto(task, random_sample, al_iterations, sampling_size, tra
     rc = process.poll()
     print('Return code: ' + str(rc))
 
-    print("Size labeled set " + str(labeled_set_raw.shape[0]))
-    print("Size unlabeled pool " + str(pool_data.shape[0]))
-    print("Size labeled set temp " + str(labeled_set_temp.shape[0]))
-    print("Size validation set temp " + str(validation_set_temp.shape[0]))
-
-
-    # Delete all predictions
-    cmd = 'rm %s' % (output_path+task+'_test_prediction.jsonl')
-    os.system(cmd)
-
     # Pick a checkpoint, rename it
     cmd = 'rm checkpoints/%s' % (model)
     os.system(cmd)
     cmd = 'mv *%s*_dev.pt checkpoints/%s' % (task, model)
+    os.system(cmd)
+
+    # check if model was created, else train again
+    if os.path.isfile('checkpoints/%s' % model):
+      pass
+    else:
+      print('No model found.')
+
+    # Delete all predictions
+    cmd = 'rm %s' % (output_path+task+'_test_prediction.jsonl')
     os.system(cmd)
 
     # run prediction on test set
