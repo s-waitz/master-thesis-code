@@ -6,21 +6,21 @@ This repository contains the code for the master thesis "Combining Deep Learning
 
 #### Installation
 
-To run the experiments, the Deepmatcher packet needs to be installed. It is recommended to install the adjusted version directly from GitHub, contains changes to enable transfer learning with weighted instances.
+To run the experiments, the Deepmatcher package needs to be installed. It is recommended to install the adjusted version directly from GitHub, which contains changes to enable transfer learning with weighted instances.
 
 ```shell
 pip install --upgrade --force-reinstall -e git+https://github.com/s-waitz/deepmatcher.git@master#egg=deepmatcher
 ```
 
 Further required packages are listed in "master-thesis-code/requirements.txt".
-Copy the files run.py and active_learning.py from the folder "/data/" to the working directory and import the functions.
+Copy the files run.py and active_learning.py from the folder "master-thesis-code/code/" to the working directory and import the functions.
 ```shell
 import run
 from run import *
 ```
 #### Experiments
 
-To reproduce the Deepmatcher experiments please use the notebooks in the folder "/notebooks/experiments_deepmatcher/". There is one notebook per dataset and one notebook for the baseline experiments. The following code snippet shows an example for the method al_tl in the setting DM3:
+To reproduce the Deepmatcher experiments, please use the notebooks in the folder "master-thesis-code/notebooks/experiments_deepmatcher/". There is one notebook per dataset and one notebook for the baseline experiments. The following code snippet shows an example for the method al_tl in the setting DM3:
 
 ```shell
 run_al(dataset='dbpedia_viaf',
@@ -39,9 +39,8 @@ run_al(dataset='dbpedia_viaf',
        file_path='input_path_with_datasets/',
        ignore_columns=('source_id','target_id'))
 ```
-Both datasets (source and target), in this case dbpedia_viaf and dbpedia_dnb, have to be in the same folder which is passed to the function via file_path. The datasets in the folder "/data/" are already prepared for the use with deepmatcher. The parameter settings for all other methods and datasets can be taken from the respective experiment notebooks and from the file run.py. To reproduce the experiments with the settings DM1 and DM2, following parameter changes are necessary:
-DM1: keep_model = False, split_validation=False
-DM2: keep_model = False, split_validation=True
+Both datasets (source and target), in this case dbpedia_viaf and dbpedia_dnb, have to be in the same folder which is passed to the function via file_path. The datasets in the folder "master-thesis-code/data/" are already prepared for the use with deepmatcher. The parameter settings for all other methods and datasets can be taken from the respective experiment notebooks and from the file run.py. To reproduce the experiments with the settings DM1 and DM2, following parameter changes are necessary:
+DM1: keep_model = False, split_validation=False; DM2: keep_model = False, split_validation=True
 
 ## Ditto
 
@@ -108,7 +107,7 @@ run_al_ditto(task='dbpedia_viaf',
             balance=True,
             verbose=True)
 ```
-The functions use the same input data as Deepmatcher (base_data_path should be identical to file_path for Deepmatcher). Before running the experiments, the files (train, validation and test) should also be converted into the ditto input format with the following command:
+The functions use the same input data as Deepmatcher (base_data_path should be identical to file_path for Deepmatcher). Before running the experiments, the files (train, validation and test) should also be converted into the ditto input format with the following command from ditto_helper.py:
 ```shell
 to_ditto_format(input_file, output_file)
 ```
